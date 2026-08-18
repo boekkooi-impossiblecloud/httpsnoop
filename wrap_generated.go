@@ -1206,6 +1206,1104 @@ func Wrap(w http.ResponseWriter, hooks Hooks) http.ResponseWriter {
 	panic("unreachable")
 }
 
+// Combine returns a http.ResponseWriter that provides a combination of interfaces provided by both
+// http.ResponseWriter instances where the last one takes precedence. Specifically if it implements any combination of:
+//
+// - http.Flusher
+// - httpFlushError
+// - http.CloseNotifier
+// - http.Hijacker
+// - io.ReaderFrom
+// - deadliner
+// - fullDuplexEnabler
+// - http.Pusher
+// - io.StringWriter
+func Combine(a http.ResponseWriter, b http.ResponseWriter) http.ResponseWriter {
+	var combo uint16
+	var ok bool
+	var t0 http.Flusher
+	if t0, ok = b.(http.Flusher); ok {
+		combo |= 1 << 8
+	} else if t0, ok = a.(http.Flusher); ok {
+		combo |= 1 << 8
+	}
+	var t1 httpFlushError
+	if t1, ok = b.(httpFlushError); ok {
+		combo |= 1 << 7
+	} else if t1, ok = a.(httpFlushError); ok {
+		combo |= 1 << 7
+	}
+	var t2 http.CloseNotifier
+	if t2, ok = b.(http.CloseNotifier); ok {
+		combo |= 1 << 6
+	} else if t2, ok = a.(http.CloseNotifier); ok {
+		combo |= 1 << 6
+	}
+	var t3 http.Hijacker
+	if t3, ok = b.(http.Hijacker); ok {
+		combo |= 1 << 5
+	} else if t3, ok = a.(http.Hijacker); ok {
+		combo |= 1 << 5
+	}
+	var t4 io.ReaderFrom
+	if t4, ok = b.(io.ReaderFrom); ok {
+		combo |= 1 << 4
+	} else if t4, ok = a.(io.ReaderFrom); ok {
+		combo |= 1 << 4
+	}
+	var t5 deadliner
+	if t5, ok = b.(deadliner); ok {
+		combo |= 1 << 3
+	} else if t5, ok = a.(deadliner); ok {
+		combo |= 1 << 3
+	}
+	var t6 fullDuplexEnabler
+	if t6, ok = b.(fullDuplexEnabler); ok {
+		combo |= 1 << 2
+	} else if t6, ok = a.(fullDuplexEnabler); ok {
+		combo |= 1 << 2
+	}
+	var t7 http.Pusher
+	if t7, ok = b.(http.Pusher); ok {
+		combo |= 1 << 1
+	} else if t7, ok = a.(http.Pusher); ok {
+		combo |= 1 << 1
+	}
+	var t8 io.StringWriter
+	if t8, ok = b.(io.StringWriter); ok {
+		combo |= 1 << 0
+	} else if t8, ok = a.(io.StringWriter); ok {
+		combo |= 1 << 0
+	}
+	switch combo {
+	case 0:
+		return &w0{b}
+	case 1:
+		return &w1{b, t8}
+	case 2:
+		return &w2{b, t7}
+	case 3:
+		return &w3{b, t7, t8}
+	case 4:
+		return &w4{b, t6}
+	case 5:
+		return &w5{b, t6, t8}
+	case 6:
+		return &w6{b, t6, t7}
+	case 7:
+		return &w7{b, t6, t7, t8}
+	case 8:
+		return &w8{b, t5}
+	case 9:
+		return &w9{b, t5, t8}
+	case 10:
+		return &w10{b, t5, t7}
+	case 11:
+		return &w11{b, t5, t7, t8}
+	case 12:
+		return &w12{b, t5, t6}
+	case 13:
+		return &w13{b, t5, t6, t8}
+	case 14:
+		return &w14{b, t5, t6, t7}
+	case 15:
+		return &w15{b, t5, t6, t7, t8}
+	case 16:
+		return &w16{b, t4}
+	case 17:
+		return &w17{b, t4, t8}
+	case 18:
+		return &w18{b, t4, t7}
+	case 19:
+		return &w19{b, t4, t7, t8}
+	case 20:
+		return &w20{b, t4, t6}
+	case 21:
+		return &w21{b, t4, t6, t8}
+	case 22:
+		return &w22{b, t4, t6, t7}
+	case 23:
+		return &w23{b, t4, t6, t7, t8}
+	case 24:
+		return &w24{b, t4, t5}
+	case 25:
+		return &w25{b, t4, t5, t8}
+	case 26:
+		return &w26{b, t4, t5, t7}
+	case 27:
+		return &w27{b, t4, t5, t7, t8}
+	case 28:
+		return &w28{b, t4, t5, t6}
+	case 29:
+		return &w29{b, t4, t5, t6, t8}
+	case 30:
+		return &w30{b, t4, t5, t6, t7}
+	case 31:
+		return &w31{b, t4, t5, t6, t7, t8}
+	case 32:
+		return &w32{b, t3}
+	case 33:
+		return &w33{b, t3, t8}
+	case 34:
+		return &w34{b, t3, t7}
+	case 35:
+		return &w35{b, t3, t7, t8}
+	case 36:
+		return &w36{b, t3, t6}
+	case 37:
+		return &w37{b, t3, t6, t8}
+	case 38:
+		return &w38{b, t3, t6, t7}
+	case 39:
+		return &w39{b, t3, t6, t7, t8}
+	case 40:
+		return &w40{b, t3, t5}
+	case 41:
+		return &w41{b, t3, t5, t8}
+	case 42:
+		return &w42{b, t3, t5, t7}
+	case 43:
+		return &w43{b, t3, t5, t7, t8}
+	case 44:
+		return &w44{b, t3, t5, t6}
+	case 45:
+		return &w45{b, t3, t5, t6, t8}
+	case 46:
+		return &w46{b, t3, t5, t6, t7}
+	case 47:
+		return &w47{b, t3, t5, t6, t7, t8}
+	case 48:
+		return &w48{b, t3, t4}
+	case 49:
+		return &w49{b, t3, t4, t8}
+	case 50:
+		return &w50{b, t3, t4, t7}
+	case 51:
+		return &w51{b, t3, t4, t7, t8}
+	case 52:
+		return &w52{b, t3, t4, t6}
+	case 53:
+		return &w53{b, t3, t4, t6, t8}
+	case 54:
+		return &w54{b, t3, t4, t6, t7}
+	case 55:
+		return &w55{b, t3, t4, t6, t7, t8}
+	case 56:
+		return &w56{b, t3, t4, t5}
+	case 57:
+		return &w57{b, t3, t4, t5, t8}
+	case 58:
+		return &w58{b, t3, t4, t5, t7}
+	case 59:
+		return &w59{b, t3, t4, t5, t7, t8}
+	case 60:
+		return &w60{b, t3, t4, t5, t6}
+	case 61:
+		return &w61{b, t3, t4, t5, t6, t8}
+	case 62:
+		return &w62{b, t3, t4, t5, t6, t7}
+	case 63:
+		return &w63{b, t3, t4, t5, t6, t7, t8}
+	case 64:
+		return &w64{b, t2}
+	case 65:
+		return &w65{b, t2, t8}
+	case 66:
+		return &w66{b, t2, t7}
+	case 67:
+		return &w67{b, t2, t7, t8}
+	case 68:
+		return &w68{b, t2, t6}
+	case 69:
+		return &w69{b, t2, t6, t8}
+	case 70:
+		return &w70{b, t2, t6, t7}
+	case 71:
+		return &w71{b, t2, t6, t7, t8}
+	case 72:
+		return &w72{b, t2, t5}
+	case 73:
+		return &w73{b, t2, t5, t8}
+	case 74:
+		return &w74{b, t2, t5, t7}
+	case 75:
+		return &w75{b, t2, t5, t7, t8}
+	case 76:
+		return &w76{b, t2, t5, t6}
+	case 77:
+		return &w77{b, t2, t5, t6, t8}
+	case 78:
+		return &w78{b, t2, t5, t6, t7}
+	case 79:
+		return &w79{b, t2, t5, t6, t7, t8}
+	case 80:
+		return &w80{b, t2, t4}
+	case 81:
+		return &w81{b, t2, t4, t8}
+	case 82:
+		return &w82{b, t2, t4, t7}
+	case 83:
+		return &w83{b, t2, t4, t7, t8}
+	case 84:
+		return &w84{b, t2, t4, t6}
+	case 85:
+		return &w85{b, t2, t4, t6, t8}
+	case 86:
+		return &w86{b, t2, t4, t6, t7}
+	case 87:
+		return &w87{b, t2, t4, t6, t7, t8}
+	case 88:
+		return &w88{b, t2, t4, t5}
+	case 89:
+		return &w89{b, t2, t4, t5, t8}
+	case 90:
+		return &w90{b, t2, t4, t5, t7}
+	case 91:
+		return &w91{b, t2, t4, t5, t7, t8}
+	case 92:
+		return &w92{b, t2, t4, t5, t6}
+	case 93:
+		return &w93{b, t2, t4, t5, t6, t8}
+	case 94:
+		return &w94{b, t2, t4, t5, t6, t7}
+	case 95:
+		return &w95{b, t2, t4, t5, t6, t7, t8}
+	case 96:
+		return &w96{b, t2, t3}
+	case 97:
+		return &w97{b, t2, t3, t8}
+	case 98:
+		return &w98{b, t2, t3, t7}
+	case 99:
+		return &w99{b, t2, t3, t7, t8}
+	case 100:
+		return &w100{b, t2, t3, t6}
+	case 101:
+		return &w101{b, t2, t3, t6, t8}
+	case 102:
+		return &w102{b, t2, t3, t6, t7}
+	case 103:
+		return &w103{b, t2, t3, t6, t7, t8}
+	case 104:
+		return &w104{b, t2, t3, t5}
+	case 105:
+		return &w105{b, t2, t3, t5, t8}
+	case 106:
+		return &w106{b, t2, t3, t5, t7}
+	case 107:
+		return &w107{b, t2, t3, t5, t7, t8}
+	case 108:
+		return &w108{b, t2, t3, t5, t6}
+	case 109:
+		return &w109{b, t2, t3, t5, t6, t8}
+	case 110:
+		return &w110{b, t2, t3, t5, t6, t7}
+	case 111:
+		return &w111{b, t2, t3, t5, t6, t7, t8}
+	case 112:
+		return &w112{b, t2, t3, t4}
+	case 113:
+		return &w113{b, t2, t3, t4, t8}
+	case 114:
+		return &w114{b, t2, t3, t4, t7}
+	case 115:
+		return &w115{b, t2, t3, t4, t7, t8}
+	case 116:
+		return &w116{b, t2, t3, t4, t6}
+	case 117:
+		return &w117{b, t2, t3, t4, t6, t8}
+	case 118:
+		return &w118{b, t2, t3, t4, t6, t7}
+	case 119:
+		return &w119{b, t2, t3, t4, t6, t7, t8}
+	case 120:
+		return &w120{b, t2, t3, t4, t5}
+	case 121:
+		return &w121{b, t2, t3, t4, t5, t8}
+	case 122:
+		return &w122{b, t2, t3, t4, t5, t7}
+	case 123:
+		return &w123{b, t2, t3, t4, t5, t7, t8}
+	case 124:
+		return &w124{b, t2, t3, t4, t5, t6}
+	case 125:
+		return &w125{b, t2, t3, t4, t5, t6, t8}
+	case 126:
+		return &w126{b, t2, t3, t4, t5, t6, t7}
+	case 127:
+		return &w127{b, t2, t3, t4, t5, t6, t7, t8}
+	case 128:
+		return &w128{b, t1}
+	case 129:
+		return &w129{b, t1, t8}
+	case 130:
+		return &w130{b, t1, t7}
+	case 131:
+		return &w131{b, t1, t7, t8}
+	case 132:
+		return &w132{b, t1, t6}
+	case 133:
+		return &w133{b, t1, t6, t8}
+	case 134:
+		return &w134{b, t1, t6, t7}
+	case 135:
+		return &w135{b, t1, t6, t7, t8}
+	case 136:
+		return &w136{b, t1, t5}
+	case 137:
+		return &w137{b, t1, t5, t8}
+	case 138:
+		return &w138{b, t1, t5, t7}
+	case 139:
+		return &w139{b, t1, t5, t7, t8}
+	case 140:
+		return &w140{b, t1, t5, t6}
+	case 141:
+		return &w141{b, t1, t5, t6, t8}
+	case 142:
+		return &w142{b, t1, t5, t6, t7}
+	case 143:
+		return &w143{b, t1, t5, t6, t7, t8}
+	case 144:
+		return &w144{b, t1, t4}
+	case 145:
+		return &w145{b, t1, t4, t8}
+	case 146:
+		return &w146{b, t1, t4, t7}
+	case 147:
+		return &w147{b, t1, t4, t7, t8}
+	case 148:
+		return &w148{b, t1, t4, t6}
+	case 149:
+		return &w149{b, t1, t4, t6, t8}
+	case 150:
+		return &w150{b, t1, t4, t6, t7}
+	case 151:
+		return &w151{b, t1, t4, t6, t7, t8}
+	case 152:
+		return &w152{b, t1, t4, t5}
+	case 153:
+		return &w153{b, t1, t4, t5, t8}
+	case 154:
+		return &w154{b, t1, t4, t5, t7}
+	case 155:
+		return &w155{b, t1, t4, t5, t7, t8}
+	case 156:
+		return &w156{b, t1, t4, t5, t6}
+	case 157:
+		return &w157{b, t1, t4, t5, t6, t8}
+	case 158:
+		return &w158{b, t1, t4, t5, t6, t7}
+	case 159:
+		return &w159{b, t1, t4, t5, t6, t7, t8}
+	case 160:
+		return &w160{b, t1, t3}
+	case 161:
+		return &w161{b, t1, t3, t8}
+	case 162:
+		return &w162{b, t1, t3, t7}
+	case 163:
+		return &w163{b, t1, t3, t7, t8}
+	case 164:
+		return &w164{b, t1, t3, t6}
+	case 165:
+		return &w165{b, t1, t3, t6, t8}
+	case 166:
+		return &w166{b, t1, t3, t6, t7}
+	case 167:
+		return &w167{b, t1, t3, t6, t7, t8}
+	case 168:
+		return &w168{b, t1, t3, t5}
+	case 169:
+		return &w169{b, t1, t3, t5, t8}
+	case 170:
+		return &w170{b, t1, t3, t5, t7}
+	case 171:
+		return &w171{b, t1, t3, t5, t7, t8}
+	case 172:
+		return &w172{b, t1, t3, t5, t6}
+	case 173:
+		return &w173{b, t1, t3, t5, t6, t8}
+	case 174:
+		return &w174{b, t1, t3, t5, t6, t7}
+	case 175:
+		return &w175{b, t1, t3, t5, t6, t7, t8}
+	case 176:
+		return &w176{b, t1, t3, t4}
+	case 177:
+		return &w177{b, t1, t3, t4, t8}
+	case 178:
+		return &w178{b, t1, t3, t4, t7}
+	case 179:
+		return &w179{b, t1, t3, t4, t7, t8}
+	case 180:
+		return &w180{b, t1, t3, t4, t6}
+	case 181:
+		return &w181{b, t1, t3, t4, t6, t8}
+	case 182:
+		return &w182{b, t1, t3, t4, t6, t7}
+	case 183:
+		return &w183{b, t1, t3, t4, t6, t7, t8}
+	case 184:
+		return &w184{b, t1, t3, t4, t5}
+	case 185:
+		return &w185{b, t1, t3, t4, t5, t8}
+	case 186:
+		return &w186{b, t1, t3, t4, t5, t7}
+	case 187:
+		return &w187{b, t1, t3, t4, t5, t7, t8}
+	case 188:
+		return &w188{b, t1, t3, t4, t5, t6}
+	case 189:
+		return &w189{b, t1, t3, t4, t5, t6, t8}
+	case 190:
+		return &w190{b, t1, t3, t4, t5, t6, t7}
+	case 191:
+		return &w191{b, t1, t3, t4, t5, t6, t7, t8}
+	case 192:
+		return &w192{b, t1, t2}
+	case 193:
+		return &w193{b, t1, t2, t8}
+	case 194:
+		return &w194{b, t1, t2, t7}
+	case 195:
+		return &w195{b, t1, t2, t7, t8}
+	case 196:
+		return &w196{b, t1, t2, t6}
+	case 197:
+		return &w197{b, t1, t2, t6, t8}
+	case 198:
+		return &w198{b, t1, t2, t6, t7}
+	case 199:
+		return &w199{b, t1, t2, t6, t7, t8}
+	case 200:
+		return &w200{b, t1, t2, t5}
+	case 201:
+		return &w201{b, t1, t2, t5, t8}
+	case 202:
+		return &w202{b, t1, t2, t5, t7}
+	case 203:
+		return &w203{b, t1, t2, t5, t7, t8}
+	case 204:
+		return &w204{b, t1, t2, t5, t6}
+	case 205:
+		return &w205{b, t1, t2, t5, t6, t8}
+	case 206:
+		return &w206{b, t1, t2, t5, t6, t7}
+	case 207:
+		return &w207{b, t1, t2, t5, t6, t7, t8}
+	case 208:
+		return &w208{b, t1, t2, t4}
+	case 209:
+		return &w209{b, t1, t2, t4, t8}
+	case 210:
+		return &w210{b, t1, t2, t4, t7}
+	case 211:
+		return &w211{b, t1, t2, t4, t7, t8}
+	case 212:
+		return &w212{b, t1, t2, t4, t6}
+	case 213:
+		return &w213{b, t1, t2, t4, t6, t8}
+	case 214:
+		return &w214{b, t1, t2, t4, t6, t7}
+	case 215:
+		return &w215{b, t1, t2, t4, t6, t7, t8}
+	case 216:
+		return &w216{b, t1, t2, t4, t5}
+	case 217:
+		return &w217{b, t1, t2, t4, t5, t8}
+	case 218:
+		return &w218{b, t1, t2, t4, t5, t7}
+	case 219:
+		return &w219{b, t1, t2, t4, t5, t7, t8}
+	case 220:
+		return &w220{b, t1, t2, t4, t5, t6}
+	case 221:
+		return &w221{b, t1, t2, t4, t5, t6, t8}
+	case 222:
+		return &w222{b, t1, t2, t4, t5, t6, t7}
+	case 223:
+		return &w223{b, t1, t2, t4, t5, t6, t7, t8}
+	case 224:
+		return &w224{b, t1, t2, t3}
+	case 225:
+		return &w225{b, t1, t2, t3, t8}
+	case 226:
+		return &w226{b, t1, t2, t3, t7}
+	case 227:
+		return &w227{b, t1, t2, t3, t7, t8}
+	case 228:
+		return &w228{b, t1, t2, t3, t6}
+	case 229:
+		return &w229{b, t1, t2, t3, t6, t8}
+	case 230:
+		return &w230{b, t1, t2, t3, t6, t7}
+	case 231:
+		return &w231{b, t1, t2, t3, t6, t7, t8}
+	case 232:
+		return &w232{b, t1, t2, t3, t5}
+	case 233:
+		return &w233{b, t1, t2, t3, t5, t8}
+	case 234:
+		return &w234{b, t1, t2, t3, t5, t7}
+	case 235:
+		return &w235{b, t1, t2, t3, t5, t7, t8}
+	case 236:
+		return &w236{b, t1, t2, t3, t5, t6}
+	case 237:
+		return &w237{b, t1, t2, t3, t5, t6, t8}
+	case 238:
+		return &w238{b, t1, t2, t3, t5, t6, t7}
+	case 239:
+		return &w239{b, t1, t2, t3, t5, t6, t7, t8}
+	case 240:
+		return &w240{b, t1, t2, t3, t4}
+	case 241:
+		return &w241{b, t1, t2, t3, t4, t8}
+	case 242:
+		return &w242{b, t1, t2, t3, t4, t7}
+	case 243:
+		return &w243{b, t1, t2, t3, t4, t7, t8}
+	case 244:
+		return &w244{b, t1, t2, t3, t4, t6}
+	case 245:
+		return &w245{b, t1, t2, t3, t4, t6, t8}
+	case 246:
+		return &w246{b, t1, t2, t3, t4, t6, t7}
+	case 247:
+		return &w247{b, t1, t2, t3, t4, t6, t7, t8}
+	case 248:
+		return &w248{b, t1, t2, t3, t4, t5}
+	case 249:
+		return &w249{b, t1, t2, t3, t4, t5, t8}
+	case 250:
+		return &w250{b, t1, t2, t3, t4, t5, t7}
+	case 251:
+		return &w251{b, t1, t2, t3, t4, t5, t7, t8}
+	case 252:
+		return &w252{b, t1, t2, t3, t4, t5, t6}
+	case 253:
+		return &w253{b, t1, t2, t3, t4, t5, t6, t8}
+	case 254:
+		return &w254{b, t1, t2, t3, t4, t5, t6, t7}
+	case 255:
+		return &w255{b, t1, t2, t3, t4, t5, t6, t7, t8}
+	case 256:
+		return &w256{b, t0}
+	case 257:
+		return &w257{b, t0, t8}
+	case 258:
+		return &w258{b, t0, t7}
+	case 259:
+		return &w259{b, t0, t7, t8}
+	case 260:
+		return &w260{b, t0, t6}
+	case 261:
+		return &w261{b, t0, t6, t8}
+	case 262:
+		return &w262{b, t0, t6, t7}
+	case 263:
+		return &w263{b, t0, t6, t7, t8}
+	case 264:
+		return &w264{b, t0, t5}
+	case 265:
+		return &w265{b, t0, t5, t8}
+	case 266:
+		return &w266{b, t0, t5, t7}
+	case 267:
+		return &w267{b, t0, t5, t7, t8}
+	case 268:
+		return &w268{b, t0, t5, t6}
+	case 269:
+		return &w269{b, t0, t5, t6, t8}
+	case 270:
+		return &w270{b, t0, t5, t6, t7}
+	case 271:
+		return &w271{b, t0, t5, t6, t7, t8}
+	case 272:
+		return &w272{b, t0, t4}
+	case 273:
+		return &w273{b, t0, t4, t8}
+	case 274:
+		return &w274{b, t0, t4, t7}
+	case 275:
+		return &w275{b, t0, t4, t7, t8}
+	case 276:
+		return &w276{b, t0, t4, t6}
+	case 277:
+		return &w277{b, t0, t4, t6, t8}
+	case 278:
+		return &w278{b, t0, t4, t6, t7}
+	case 279:
+		return &w279{b, t0, t4, t6, t7, t8}
+	case 280:
+		return &w280{b, t0, t4, t5}
+	case 281:
+		return &w281{b, t0, t4, t5, t8}
+	case 282:
+		return &w282{b, t0, t4, t5, t7}
+	case 283:
+		return &w283{b, t0, t4, t5, t7, t8}
+	case 284:
+		return &w284{b, t0, t4, t5, t6}
+	case 285:
+		return &w285{b, t0, t4, t5, t6, t8}
+	case 286:
+		return &w286{b, t0, t4, t5, t6, t7}
+	case 287:
+		return &w287{b, t0, t4, t5, t6, t7, t8}
+	case 288:
+		return &w288{b, t0, t3}
+	case 289:
+		return &w289{b, t0, t3, t8}
+	case 290:
+		return &w290{b, t0, t3, t7}
+	case 291:
+		return &w291{b, t0, t3, t7, t8}
+	case 292:
+		return &w292{b, t0, t3, t6}
+	case 293:
+		return &w293{b, t0, t3, t6, t8}
+	case 294:
+		return &w294{b, t0, t3, t6, t7}
+	case 295:
+		return &w295{b, t0, t3, t6, t7, t8}
+	case 296:
+		return &w296{b, t0, t3, t5}
+	case 297:
+		return &w297{b, t0, t3, t5, t8}
+	case 298:
+		return &w298{b, t0, t3, t5, t7}
+	case 299:
+		return &w299{b, t0, t3, t5, t7, t8}
+	case 300:
+		return &w300{b, t0, t3, t5, t6}
+	case 301:
+		return &w301{b, t0, t3, t5, t6, t8}
+	case 302:
+		return &w302{b, t0, t3, t5, t6, t7}
+	case 303:
+		return &w303{b, t0, t3, t5, t6, t7, t8}
+	case 304:
+		return &w304{b, t0, t3, t4}
+	case 305:
+		return &w305{b, t0, t3, t4, t8}
+	case 306:
+		return &w306{b, t0, t3, t4, t7}
+	case 307:
+		return &w307{b, t0, t3, t4, t7, t8}
+	case 308:
+		return &w308{b, t0, t3, t4, t6}
+	case 309:
+		return &w309{b, t0, t3, t4, t6, t8}
+	case 310:
+		return &w310{b, t0, t3, t4, t6, t7}
+	case 311:
+		return &w311{b, t0, t3, t4, t6, t7, t8}
+	case 312:
+		return &w312{b, t0, t3, t4, t5}
+	case 313:
+		return &w313{b, t0, t3, t4, t5, t8}
+	case 314:
+		return &w314{b, t0, t3, t4, t5, t7}
+	case 315:
+		return &w315{b, t0, t3, t4, t5, t7, t8}
+	case 316:
+		return &w316{b, t0, t3, t4, t5, t6}
+	case 317:
+		return &w317{b, t0, t3, t4, t5, t6, t8}
+	case 318:
+		return &w318{b, t0, t3, t4, t5, t6, t7}
+	case 319:
+		return &w319{b, t0, t3, t4, t5, t6, t7, t8}
+	case 320:
+		return &w320{b, t0, t2}
+	case 321:
+		return &w321{b, t0, t2, t8}
+	case 322:
+		return &w322{b, t0, t2, t7}
+	case 323:
+		return &w323{b, t0, t2, t7, t8}
+	case 324:
+		return &w324{b, t0, t2, t6}
+	case 325:
+		return &w325{b, t0, t2, t6, t8}
+	case 326:
+		return &w326{b, t0, t2, t6, t7}
+	case 327:
+		return &w327{b, t0, t2, t6, t7, t8}
+	case 328:
+		return &w328{b, t0, t2, t5}
+	case 329:
+		return &w329{b, t0, t2, t5, t8}
+	case 330:
+		return &w330{b, t0, t2, t5, t7}
+	case 331:
+		return &w331{b, t0, t2, t5, t7, t8}
+	case 332:
+		return &w332{b, t0, t2, t5, t6}
+	case 333:
+		return &w333{b, t0, t2, t5, t6, t8}
+	case 334:
+		return &w334{b, t0, t2, t5, t6, t7}
+	case 335:
+		return &w335{b, t0, t2, t5, t6, t7, t8}
+	case 336:
+		return &w336{b, t0, t2, t4}
+	case 337:
+		return &w337{b, t0, t2, t4, t8}
+	case 338:
+		return &w338{b, t0, t2, t4, t7}
+	case 339:
+		return &w339{b, t0, t2, t4, t7, t8}
+	case 340:
+		return &w340{b, t0, t2, t4, t6}
+	case 341:
+		return &w341{b, t0, t2, t4, t6, t8}
+	case 342:
+		return &w342{b, t0, t2, t4, t6, t7}
+	case 343:
+		return &w343{b, t0, t2, t4, t6, t7, t8}
+	case 344:
+		return &w344{b, t0, t2, t4, t5}
+	case 345:
+		return &w345{b, t0, t2, t4, t5, t8}
+	case 346:
+		return &w346{b, t0, t2, t4, t5, t7}
+	case 347:
+		return &w347{b, t0, t2, t4, t5, t7, t8}
+	case 348:
+		return &w348{b, t0, t2, t4, t5, t6}
+	case 349:
+		return &w349{b, t0, t2, t4, t5, t6, t8}
+	case 350:
+		return &w350{b, t0, t2, t4, t5, t6, t7}
+	case 351:
+		return &w351{b, t0, t2, t4, t5, t6, t7, t8}
+	case 352:
+		return &w352{b, t0, t2, t3}
+	case 353:
+		return &w353{b, t0, t2, t3, t8}
+	case 354:
+		return &w354{b, t0, t2, t3, t7}
+	case 355:
+		return &w355{b, t0, t2, t3, t7, t8}
+	case 356:
+		return &w356{b, t0, t2, t3, t6}
+	case 357:
+		return &w357{b, t0, t2, t3, t6, t8}
+	case 358:
+		return &w358{b, t0, t2, t3, t6, t7}
+	case 359:
+		return &w359{b, t0, t2, t3, t6, t7, t8}
+	case 360:
+		return &w360{b, t0, t2, t3, t5}
+	case 361:
+		return &w361{b, t0, t2, t3, t5, t8}
+	case 362:
+		return &w362{b, t0, t2, t3, t5, t7}
+	case 363:
+		return &w363{b, t0, t2, t3, t5, t7, t8}
+	case 364:
+		return &w364{b, t0, t2, t3, t5, t6}
+	case 365:
+		return &w365{b, t0, t2, t3, t5, t6, t8}
+	case 366:
+		return &w366{b, t0, t2, t3, t5, t6, t7}
+	case 367:
+		return &w367{b, t0, t2, t3, t5, t6, t7, t8}
+	case 368:
+		return &w368{b, t0, t2, t3, t4}
+	case 369:
+		return &w369{b, t0, t2, t3, t4, t8}
+	case 370:
+		return &w370{b, t0, t2, t3, t4, t7}
+	case 371:
+		return &w371{b, t0, t2, t3, t4, t7, t8}
+	case 372:
+		return &w372{b, t0, t2, t3, t4, t6}
+	case 373:
+		return &w373{b, t0, t2, t3, t4, t6, t8}
+	case 374:
+		return &w374{b, t0, t2, t3, t4, t6, t7}
+	case 375:
+		return &w375{b, t0, t2, t3, t4, t6, t7, t8}
+	case 376:
+		return &w376{b, t0, t2, t3, t4, t5}
+	case 377:
+		return &w377{b, t0, t2, t3, t4, t5, t8}
+	case 378:
+		return &w378{b, t0, t2, t3, t4, t5, t7}
+	case 379:
+		return &w379{b, t0, t2, t3, t4, t5, t7, t8}
+	case 380:
+		return &w380{b, t0, t2, t3, t4, t5, t6}
+	case 381:
+		return &w381{b, t0, t2, t3, t4, t5, t6, t8}
+	case 382:
+		return &w382{b, t0, t2, t3, t4, t5, t6, t7}
+	case 383:
+		return &w383{b, t0, t2, t3, t4, t5, t6, t7, t8}
+	case 384:
+		return &w384{b, t0, t1}
+	case 385:
+		return &w385{b, t0, t1, t8}
+	case 386:
+		return &w386{b, t0, t1, t7}
+	case 387:
+		return &w387{b, t0, t1, t7, t8}
+	case 388:
+		return &w388{b, t0, t1, t6}
+	case 389:
+		return &w389{b, t0, t1, t6, t8}
+	case 390:
+		return &w390{b, t0, t1, t6, t7}
+	case 391:
+		return &w391{b, t0, t1, t6, t7, t8}
+	case 392:
+		return &w392{b, t0, t1, t5}
+	case 393:
+		return &w393{b, t0, t1, t5, t8}
+	case 394:
+		return &w394{b, t0, t1, t5, t7}
+	case 395:
+		return &w395{b, t0, t1, t5, t7, t8}
+	case 396:
+		return &w396{b, t0, t1, t5, t6}
+	case 397:
+		return &w397{b, t0, t1, t5, t6, t8}
+	case 398:
+		return &w398{b, t0, t1, t5, t6, t7}
+	case 399:
+		return &w399{b, t0, t1, t5, t6, t7, t8}
+	case 400:
+		return &w400{b, t0, t1, t4}
+	case 401:
+		return &w401{b, t0, t1, t4, t8}
+	case 402:
+		return &w402{b, t0, t1, t4, t7}
+	case 403:
+		return &w403{b, t0, t1, t4, t7, t8}
+	case 404:
+		return &w404{b, t0, t1, t4, t6}
+	case 405:
+		return &w405{b, t0, t1, t4, t6, t8}
+	case 406:
+		return &w406{b, t0, t1, t4, t6, t7}
+	case 407:
+		return &w407{b, t0, t1, t4, t6, t7, t8}
+	case 408:
+		return &w408{b, t0, t1, t4, t5}
+	case 409:
+		return &w409{b, t0, t1, t4, t5, t8}
+	case 410:
+		return &w410{b, t0, t1, t4, t5, t7}
+	case 411:
+		return &w411{b, t0, t1, t4, t5, t7, t8}
+	case 412:
+		return &w412{b, t0, t1, t4, t5, t6}
+	case 413:
+		return &w413{b, t0, t1, t4, t5, t6, t8}
+	case 414:
+		return &w414{b, t0, t1, t4, t5, t6, t7}
+	case 415:
+		return &w415{b, t0, t1, t4, t5, t6, t7, t8}
+	case 416:
+		return &w416{b, t0, t1, t3}
+	case 417:
+		return &w417{b, t0, t1, t3, t8}
+	case 418:
+		return &w418{b, t0, t1, t3, t7}
+	case 419:
+		return &w419{b, t0, t1, t3, t7, t8}
+	case 420:
+		return &w420{b, t0, t1, t3, t6}
+	case 421:
+		return &w421{b, t0, t1, t3, t6, t8}
+	case 422:
+		return &w422{b, t0, t1, t3, t6, t7}
+	case 423:
+		return &w423{b, t0, t1, t3, t6, t7, t8}
+	case 424:
+		return &w424{b, t0, t1, t3, t5}
+	case 425:
+		return &w425{b, t0, t1, t3, t5, t8}
+	case 426:
+		return &w426{b, t0, t1, t3, t5, t7}
+	case 427:
+		return &w427{b, t0, t1, t3, t5, t7, t8}
+	case 428:
+		return &w428{b, t0, t1, t3, t5, t6}
+	case 429:
+		return &w429{b, t0, t1, t3, t5, t6, t8}
+	case 430:
+		return &w430{b, t0, t1, t3, t5, t6, t7}
+	case 431:
+		return &w431{b, t0, t1, t3, t5, t6, t7, t8}
+	case 432:
+		return &w432{b, t0, t1, t3, t4}
+	case 433:
+		return &w433{b, t0, t1, t3, t4, t8}
+	case 434:
+		return &w434{b, t0, t1, t3, t4, t7}
+	case 435:
+		return &w435{b, t0, t1, t3, t4, t7, t8}
+	case 436:
+		return &w436{b, t0, t1, t3, t4, t6}
+	case 437:
+		return &w437{b, t0, t1, t3, t4, t6, t8}
+	case 438:
+		return &w438{b, t0, t1, t3, t4, t6, t7}
+	case 439:
+		return &w439{b, t0, t1, t3, t4, t6, t7, t8}
+	case 440:
+		return &w440{b, t0, t1, t3, t4, t5}
+	case 441:
+		return &w441{b, t0, t1, t3, t4, t5, t8}
+	case 442:
+		return &w442{b, t0, t1, t3, t4, t5, t7}
+	case 443:
+		return &w443{b, t0, t1, t3, t4, t5, t7, t8}
+	case 444:
+		return &w444{b, t0, t1, t3, t4, t5, t6}
+	case 445:
+		return &w445{b, t0, t1, t3, t4, t5, t6, t8}
+	case 446:
+		return &w446{b, t0, t1, t3, t4, t5, t6, t7}
+	case 447:
+		return &w447{b, t0, t1, t3, t4, t5, t6, t7, t8}
+	case 448:
+		return &w448{b, t0, t1, t2}
+	case 449:
+		return &w449{b, t0, t1, t2, t8}
+	case 450:
+		return &w450{b, t0, t1, t2, t7}
+	case 451:
+		return &w451{b, t0, t1, t2, t7, t8}
+	case 452:
+		return &w452{b, t0, t1, t2, t6}
+	case 453:
+		return &w453{b, t0, t1, t2, t6, t8}
+	case 454:
+		return &w454{b, t0, t1, t2, t6, t7}
+	case 455:
+		return &w455{b, t0, t1, t2, t6, t7, t8}
+	case 456:
+		return &w456{b, t0, t1, t2, t5}
+	case 457:
+		return &w457{b, t0, t1, t2, t5, t8}
+	case 458:
+		return &w458{b, t0, t1, t2, t5, t7}
+	case 459:
+		return &w459{b, t0, t1, t2, t5, t7, t8}
+	case 460:
+		return &w460{b, t0, t1, t2, t5, t6}
+	case 461:
+		return &w461{b, t0, t1, t2, t5, t6, t8}
+	case 462:
+		return &w462{b, t0, t1, t2, t5, t6, t7}
+	case 463:
+		return &w463{b, t0, t1, t2, t5, t6, t7, t8}
+	case 464:
+		return &w464{b, t0, t1, t2, t4}
+	case 465:
+		return &w465{b, t0, t1, t2, t4, t8}
+	case 466:
+		return &w466{b, t0, t1, t2, t4, t7}
+	case 467:
+		return &w467{b, t0, t1, t2, t4, t7, t8}
+	case 468:
+		return &w468{b, t0, t1, t2, t4, t6}
+	case 469:
+		return &w469{b, t0, t1, t2, t4, t6, t8}
+	case 470:
+		return &w470{b, t0, t1, t2, t4, t6, t7}
+	case 471:
+		return &w471{b, t0, t1, t2, t4, t6, t7, t8}
+	case 472:
+		return &w472{b, t0, t1, t2, t4, t5}
+	case 473:
+		return &w473{b, t0, t1, t2, t4, t5, t8}
+	case 474:
+		return &w474{b, t0, t1, t2, t4, t5, t7}
+	case 475:
+		return &w475{b, t0, t1, t2, t4, t5, t7, t8}
+	case 476:
+		return &w476{b, t0, t1, t2, t4, t5, t6}
+	case 477:
+		return &w477{b, t0, t1, t2, t4, t5, t6, t8}
+	case 478:
+		return &w478{b, t0, t1, t2, t4, t5, t6, t7}
+	case 479:
+		return &w479{b, t0, t1, t2, t4, t5, t6, t7, t8}
+	case 480:
+		return &w480{b, t0, t1, t2, t3}
+	case 481:
+		return &w481{b, t0, t1, t2, t3, t8}
+	case 482:
+		return &w482{b, t0, t1, t2, t3, t7}
+	case 483:
+		return &w483{b, t0, t1, t2, t3, t7, t8}
+	case 484:
+		return &w484{b, t0, t1, t2, t3, t6}
+	case 485:
+		return &w485{b, t0, t1, t2, t3, t6, t8}
+	case 486:
+		return &w486{b, t0, t1, t2, t3, t6, t7}
+	case 487:
+		return &w487{b, t0, t1, t2, t3, t6, t7, t8}
+	case 488:
+		return &w488{b, t0, t1, t2, t3, t5}
+	case 489:
+		return &w489{b, t0, t1, t2, t3, t5, t8}
+	case 490:
+		return &w490{b, t0, t1, t2, t3, t5, t7}
+	case 491:
+		return &w491{b, t0, t1, t2, t3, t5, t7, t8}
+	case 492:
+		return &w492{b, t0, t1, t2, t3, t5, t6}
+	case 493:
+		return &w493{b, t0, t1, t2, t3, t5, t6, t8}
+	case 494:
+		return &w494{b, t0, t1, t2, t3, t5, t6, t7}
+	case 495:
+		return &w495{b, t0, t1, t2, t3, t5, t6, t7, t8}
+	case 496:
+		return &w496{b, t0, t1, t2, t3, t4}
+	case 497:
+		return &w497{b, t0, t1, t2, t3, t4, t8}
+	case 498:
+		return &w498{b, t0, t1, t2, t3, t4, t7}
+	case 499:
+		return &w499{b, t0, t1, t2, t3, t4, t7, t8}
+	case 500:
+		return &w500{b, t0, t1, t2, t3, t4, t6}
+	case 501:
+		return &w501{b, t0, t1, t2, t3, t4, t6, t8}
+	case 502:
+		return &w502{b, t0, t1, t2, t3, t4, t6, t7}
+	case 503:
+		return &w503{b, t0, t1, t2, t3, t4, t6, t7, t8}
+	case 504:
+		return &w504{b, t0, t1, t2, t3, t4, t5}
+	case 505:
+		return &w505{b, t0, t1, t2, t3, t4, t5, t8}
+	case 506:
+		return &w506{b, t0, t1, t2, t3, t4, t5, t7}
+	case 507:
+		return &w507{b, t0, t1, t2, t3, t4, t5, t7, t8}
+	case 508:
+		return &w508{b, t0, t1, t2, t3, t4, t5, t6}
+	case 509:
+		return &w509{b, t0, t1, t2, t3, t4, t5, t6, t8}
+	case 510:
+		return &w510{b, t0, t1, t2, t3, t4, t5, t6, t7}
+	case 511:
+		return &w511{b, t0, t1, t2, t3, t4, t5, t6, t7, t8}
+	}
+	panic("unreachable")
+}
+
 type rwState struct {
 	w                http.ResponseWriter
 	header           HeaderFunc
@@ -1330,6 +2428,10 @@ func (w *rw0) Write(b []byte) (int, error) {
 	return (*rwState)(w).doWrite(b)
 }
 
+type w0 struct {
+	http.ResponseWriter
+}
+
 // combination 2/512: http.ResponseWriter, io.StringWriter
 type rw1 rwState
 
@@ -1347,6 +2449,11 @@ func (w *rw1) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w1 struct {
+	http.ResponseWriter
+	io.StringWriter
+}
+
 // combination 3/512: http.ResponseWriter, http.Pusher
 type rw2 rwState
 
@@ -1362,6 +2469,11 @@ func (w *rw2) Write(b []byte) (int, error) {
 }
 func (w *rw2) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w2 struct {
+	http.ResponseWriter
+	http.Pusher
 }
 
 // combination 4/512: http.ResponseWriter, http.Pusher, io.StringWriter
@@ -1384,6 +2496,12 @@ func (w *rw3) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w3 struct {
+	http.ResponseWriter
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 5/512: http.ResponseWriter, fullDuplexEnabler
 type rw4 rwState
 
@@ -1399,6 +2517,11 @@ func (w *rw4) Write(b []byte) (int, error) {
 }
 func (w *rw4) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w4 struct {
+	http.ResponseWriter
+	fullDuplexEnabler
 }
 
 // combination 6/512: http.ResponseWriter, fullDuplexEnabler, io.StringWriter
@@ -1421,6 +2544,12 @@ func (w *rw5) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w5 struct {
+	http.ResponseWriter
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 7/512: http.ResponseWriter, fullDuplexEnabler, http.Pusher
 type rw6 rwState
 
@@ -1439,6 +2568,12 @@ func (w *rw6) EnableFullDuplex() error {
 }
 func (w *rw6) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w6 struct {
+	http.ResponseWriter
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 8/512: http.ResponseWriter, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -1464,6 +2599,13 @@ func (w *rw7) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w7 struct {
+	http.ResponseWriter
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 9/512: http.ResponseWriter, deadliner
 type rw8 rwState
 
@@ -1482,6 +2624,11 @@ func (w *rw8) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw8) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w8 struct {
+	http.ResponseWriter
+	deadliner
 }
 
 // combination 10/512: http.ResponseWriter, deadliner, io.StringWriter
@@ -1507,6 +2654,12 @@ func (w *rw9) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w9 struct {
+	http.ResponseWriter
+	deadliner
+	io.StringWriter
+}
+
 // combination 11/512: http.ResponseWriter, deadliner, http.Pusher
 type rw10 rwState
 
@@ -1528,6 +2681,12 @@ func (w *rw10) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw10) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w10 struct {
+	http.ResponseWriter
+	deadliner
+	http.Pusher
 }
 
 // combination 12/512: http.ResponseWriter, deadliner, http.Pusher, io.StringWriter
@@ -1556,6 +2715,13 @@ func (w *rw11) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w11 struct {
+	http.ResponseWriter
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 13/512: http.ResponseWriter, deadliner, fullDuplexEnabler
 type rw12 rwState
 
@@ -1577,6 +2743,12 @@ func (w *rw12) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw12) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w12 struct {
+	http.ResponseWriter
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 14/512: http.ResponseWriter, deadliner, fullDuplexEnabler, io.StringWriter
@@ -1605,6 +2777,13 @@ func (w *rw13) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w13 struct {
+	http.ResponseWriter
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 15/512: http.ResponseWriter, deadliner, fullDuplexEnabler, http.Pusher
 type rw14 rwState
 
@@ -1629,6 +2808,13 @@ func (w *rw14) EnableFullDuplex() error {
 }
 func (w *rw14) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w14 struct {
+	http.ResponseWriter
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 16/512: http.ResponseWriter, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -1660,6 +2846,14 @@ func (w *rw15) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w15 struct {
+	http.ResponseWriter
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 17/512: http.ResponseWriter, io.ReaderFrom
 type rw16 rwState
 
@@ -1675,6 +2869,11 @@ func (w *rw16) Write(b []byte) (int, error) {
 }
 func (w *rw16) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w16 struct {
+	http.ResponseWriter
+	io.ReaderFrom
 }
 
 // combination 18/512: http.ResponseWriter, io.ReaderFrom, io.StringWriter
@@ -1697,6 +2896,12 @@ func (w *rw17) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w17 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 19/512: http.ResponseWriter, io.ReaderFrom, http.Pusher
 type rw18 rwState
 
@@ -1715,6 +2920,12 @@ func (w *rw18) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw18) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w18 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 20/512: http.ResponseWriter, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -1740,6 +2951,13 @@ func (w *rw19) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w19 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 21/512: http.ResponseWriter, io.ReaderFrom, fullDuplexEnabler
 type rw20 rwState
 
@@ -1758,6 +2976,12 @@ func (w *rw20) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw20) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w20 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 22/512: http.ResponseWriter, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -1783,6 +3007,13 @@ func (w *rw21) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w21 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 23/512: http.ResponseWriter, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw22 rwState
 
@@ -1804,6 +3035,13 @@ func (w *rw22) EnableFullDuplex() error {
 }
 func (w *rw22) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w22 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 24/512: http.ResponseWriter, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -1832,6 +3070,14 @@ func (w *rw23) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w23 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 25/512: http.ResponseWriter, io.ReaderFrom, deadliner
 type rw24 rwState
 
@@ -1853,6 +3099,12 @@ func (w *rw24) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw24) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w24 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 26/512: http.ResponseWriter, io.ReaderFrom, deadliner, io.StringWriter
@@ -1881,6 +3133,13 @@ func (w *rw25) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w25 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 27/512: http.ResponseWriter, io.ReaderFrom, deadliner, http.Pusher
 type rw26 rwState
 
@@ -1905,6 +3164,13 @@ func (w *rw26) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw26) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w26 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 28/512: http.ResponseWriter, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -1936,6 +3202,14 @@ func (w *rw27) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w27 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 29/512: http.ResponseWriter, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw28 rwState
 
@@ -1960,6 +3234,13 @@ func (w *rw28) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw28) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w28 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 30/512: http.ResponseWriter, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -1991,6 +3272,14 @@ func (w *rw29) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w29 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 31/512: http.ResponseWriter, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw30 rwState
 
@@ -2018,6 +3307,14 @@ func (w *rw30) EnableFullDuplex() error {
 }
 func (w *rw30) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w30 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 32/512: http.ResponseWriter, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -2052,6 +3349,15 @@ func (w *rw31) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w31 struct {
+	http.ResponseWriter
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 33/512: http.ResponseWriter, http.Hijacker
 type rw32 rwState
 
@@ -2067,6 +3373,11 @@ func (w *rw32) Write(b []byte) (int, error) {
 }
 func (w *rw32) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w32 struct {
+	http.ResponseWriter
+	http.Hijacker
 }
 
 // combination 34/512: http.ResponseWriter, http.Hijacker, io.StringWriter
@@ -2089,6 +3400,12 @@ func (w *rw33) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w33 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 35/512: http.ResponseWriter, http.Hijacker, http.Pusher
 type rw34 rwState
 
@@ -2107,6 +3424,12 @@ func (w *rw34) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw34) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w34 struct {
+	http.ResponseWriter
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 36/512: http.ResponseWriter, http.Hijacker, http.Pusher, io.StringWriter
@@ -2132,6 +3455,13 @@ func (w *rw35) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w35 struct {
+	http.ResponseWriter
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 37/512: http.ResponseWriter, http.Hijacker, fullDuplexEnabler
 type rw36 rwState
 
@@ -2150,6 +3480,12 @@ func (w *rw36) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw36) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w36 struct {
+	http.ResponseWriter
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 38/512: http.ResponseWriter, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -2175,6 +3511,13 @@ func (w *rw37) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w37 struct {
+	http.ResponseWriter
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 39/512: http.ResponseWriter, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw38 rwState
 
@@ -2196,6 +3539,13 @@ func (w *rw38) EnableFullDuplex() error {
 }
 func (w *rw38) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w38 struct {
+	http.ResponseWriter
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 40/512: http.ResponseWriter, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -2224,6 +3574,14 @@ func (w *rw39) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w39 struct {
+	http.ResponseWriter
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 41/512: http.ResponseWriter, http.Hijacker, deadliner
 type rw40 rwState
 
@@ -2245,6 +3603,12 @@ func (w *rw40) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw40) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w40 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
 }
 
 // combination 42/512: http.ResponseWriter, http.Hijacker, deadliner, io.StringWriter
@@ -2273,6 +3637,13 @@ func (w *rw41) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w41 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 43/512: http.ResponseWriter, http.Hijacker, deadliner, http.Pusher
 type rw42 rwState
 
@@ -2297,6 +3668,13 @@ func (w *rw42) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw42) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w42 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 44/512: http.ResponseWriter, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -2328,6 +3706,14 @@ func (w *rw43) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w43 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 45/512: http.ResponseWriter, http.Hijacker, deadliner, fullDuplexEnabler
 type rw44 rwState
 
@@ -2352,6 +3738,13 @@ func (w *rw44) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw44) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w44 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 46/512: http.ResponseWriter, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -2383,6 +3776,14 @@ func (w *rw45) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w45 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 47/512: http.ResponseWriter, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw46 rwState
 
@@ -2410,6 +3811,14 @@ func (w *rw46) EnableFullDuplex() error {
 }
 func (w *rw46) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w46 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 48/512: http.ResponseWriter, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -2444,6 +3853,15 @@ func (w *rw47) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w47 struct {
+	http.ResponseWriter
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 49/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom
 type rw48 rwState
 
@@ -2462,6 +3880,12 @@ func (w *rw48) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw48) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w48 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 50/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -2487,6 +3911,13 @@ func (w *rw49) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w49 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 51/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw50 rwState
 
@@ -2508,6 +3939,13 @@ func (w *rw50) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw50) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w50 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 52/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -2536,6 +3974,14 @@ func (w *rw51) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w51 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 53/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw52 rwState
 
@@ -2557,6 +4003,13 @@ func (w *rw52) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw52) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w52 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 54/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -2585,6 +4038,14 @@ func (w *rw53) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w53 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 55/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw54 rwState
 
@@ -2609,6 +4070,14 @@ func (w *rw54) EnableFullDuplex() error {
 }
 func (w *rw54) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w54 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 56/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -2640,6 +4109,15 @@ func (w *rw55) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w55 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 57/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner
 type rw56 rwState
 
@@ -2664,6 +4142,13 @@ func (w *rw56) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw56) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w56 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 58/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -2695,6 +4180,14 @@ func (w *rw57) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w57 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 59/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw58 rwState
 
@@ -2722,6 +4215,14 @@ func (w *rw58) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw58) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w58 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 60/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -2756,6 +4257,15 @@ func (w *rw59) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w59 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 61/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw60 rwState
 
@@ -2783,6 +4293,14 @@ func (w *rw60) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw60) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w60 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 62/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -2817,6 +4335,15 @@ func (w *rw61) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w61 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 63/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw62 rwState
 
@@ -2847,6 +4374,15 @@ func (w *rw62) EnableFullDuplex() error {
 }
 func (w *rw62) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w62 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 64/512: http.ResponseWriter, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -2884,6 +4420,16 @@ func (w *rw63) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w63 struct {
+	http.ResponseWriter
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 65/512: http.ResponseWriter, http.CloseNotifier
 type rw64 rwState
 
@@ -2899,6 +4445,11 @@ func (w *rw64) Write(b []byte) (int, error) {
 }
 func (w *rw64) CloseNotify() <-chan bool {
 	return (*rwState)(w).doCloseNotify()
+}
+
+type w64 struct {
+	http.ResponseWriter
+	http.CloseNotifier
 }
 
 // combination 66/512: http.ResponseWriter, http.CloseNotifier, io.StringWriter
@@ -2921,6 +4472,12 @@ func (w *rw65) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w65 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.StringWriter
+}
+
 // combination 67/512: http.ResponseWriter, http.CloseNotifier, http.Pusher
 type rw66 rwState
 
@@ -2939,6 +4496,12 @@ func (w *rw66) CloseNotify() <-chan bool {
 }
 func (w *rw66) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w66 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Pusher
 }
 
 // combination 68/512: http.ResponseWriter, http.CloseNotifier, http.Pusher, io.StringWriter
@@ -2964,6 +4527,13 @@ func (w *rw67) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w67 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 69/512: http.ResponseWriter, http.CloseNotifier, fullDuplexEnabler
 type rw68 rwState
 
@@ -2982,6 +4552,12 @@ func (w *rw68) CloseNotify() <-chan bool {
 }
 func (w *rw68) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w68 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	fullDuplexEnabler
 }
 
 // combination 70/512: http.ResponseWriter, http.CloseNotifier, fullDuplexEnabler, io.StringWriter
@@ -3007,6 +4583,13 @@ func (w *rw69) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w69 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 71/512: http.ResponseWriter, http.CloseNotifier, fullDuplexEnabler, http.Pusher
 type rw70 rwState
 
@@ -3028,6 +4611,13 @@ func (w *rw70) EnableFullDuplex() error {
 }
 func (w *rw70) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w70 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 72/512: http.ResponseWriter, http.CloseNotifier, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -3056,6 +4646,14 @@ func (w *rw71) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w71 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 73/512: http.ResponseWriter, http.CloseNotifier, deadliner
 type rw72 rwState
 
@@ -3077,6 +4675,12 @@ func (w *rw72) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw72) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w72 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
 }
 
 // combination 74/512: http.ResponseWriter, http.CloseNotifier, deadliner, io.StringWriter
@@ -3105,6 +4709,13 @@ func (w *rw73) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w73 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	io.StringWriter
+}
+
 // combination 75/512: http.ResponseWriter, http.CloseNotifier, deadliner, http.Pusher
 type rw74 rwState
 
@@ -3129,6 +4740,13 @@ func (w *rw74) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw74) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w74 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	http.Pusher
 }
 
 // combination 76/512: http.ResponseWriter, http.CloseNotifier, deadliner, http.Pusher, io.StringWriter
@@ -3160,6 +4778,14 @@ func (w *rw75) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w75 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 77/512: http.ResponseWriter, http.CloseNotifier, deadliner, fullDuplexEnabler
 type rw76 rwState
 
@@ -3184,6 +4810,13 @@ func (w *rw76) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw76) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w76 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 78/512: http.ResponseWriter, http.CloseNotifier, deadliner, fullDuplexEnabler, io.StringWriter
@@ -3215,6 +4848,14 @@ func (w *rw77) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w77 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 79/512: http.ResponseWriter, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher
 type rw78 rwState
 
@@ -3242,6 +4883,14 @@ func (w *rw78) EnableFullDuplex() error {
 }
 func (w *rw78) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w78 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 80/512: http.ResponseWriter, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -3276,6 +4925,15 @@ func (w *rw79) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w79 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 81/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom
 type rw80 rwState
 
@@ -3294,6 +4952,12 @@ func (w *rw80) CloseNotify() <-chan bool {
 }
 func (w *rw80) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w80 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
 }
 
 // combination 82/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, io.StringWriter
@@ -3319,6 +4983,13 @@ func (w *rw81) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w81 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 83/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, http.Pusher
 type rw82 rwState
 
@@ -3340,6 +5011,13 @@ func (w *rw82) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw82) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w82 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 84/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -3368,6 +5046,14 @@ func (w *rw83) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w83 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 85/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler
 type rw84 rwState
 
@@ -3389,6 +5075,13 @@ func (w *rw84) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw84) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w84 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 86/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -3417,6 +5110,14 @@ func (w *rw85) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w85 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 87/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw86 rwState
 
@@ -3441,6 +5142,14 @@ func (w *rw86) EnableFullDuplex() error {
 }
 func (w *rw86) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w86 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 88/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -3472,6 +5181,15 @@ func (w *rw87) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w87 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 89/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner
 type rw88 rwState
 
@@ -3496,6 +5214,13 @@ func (w *rw88) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw88) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w88 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 90/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, io.StringWriter
@@ -3527,6 +5252,14 @@ func (w *rw89) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w89 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 91/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher
 type rw90 rwState
 
@@ -3554,6 +5287,14 @@ func (w *rw90) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw90) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w90 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 92/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -3588,6 +5329,15 @@ func (w *rw91) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w91 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 93/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw92 rwState
 
@@ -3615,6 +5365,14 @@ func (w *rw92) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw92) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w92 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 94/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -3649,6 +5407,15 @@ func (w *rw93) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w93 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 95/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw94 rwState
 
@@ -3679,6 +5446,15 @@ func (w *rw94) EnableFullDuplex() error {
 }
 func (w *rw94) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w94 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 96/512: http.ResponseWriter, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -3716,6 +5492,16 @@ func (w *rw95) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w95 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 97/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker
 type rw96 rwState
 
@@ -3734,6 +5520,12 @@ func (w *rw96) CloseNotify() <-chan bool {
 }
 func (w *rw96) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w96 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
 }
 
 // combination 98/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.StringWriter
@@ -3759,6 +5551,13 @@ func (w *rw97) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w97 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 99/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, http.Pusher
 type rw98 rwState
 
@@ -3780,6 +5579,13 @@ func (w *rw98) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw98) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w98 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 100/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, http.Pusher, io.StringWriter
@@ -3808,6 +5614,14 @@ func (w *rw99) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w99 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 101/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, fullDuplexEnabler
 type rw100 rwState
 
@@ -3829,6 +5643,13 @@ func (w *rw100) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw100) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w100 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 102/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -3857,6 +5678,14 @@ func (w *rw101) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w101 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 103/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw102 rwState
 
@@ -3881,6 +5710,14 @@ func (w *rw102) EnableFullDuplex() error {
 }
 func (w *rw102) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w102 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 104/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -3912,6 +5749,15 @@ func (w *rw103) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w103 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 105/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner
 type rw104 rwState
 
@@ -3936,6 +5782,13 @@ func (w *rw104) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw104) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w104 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
 }
 
 // combination 106/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, io.StringWriter
@@ -3967,6 +5820,14 @@ func (w *rw105) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w105 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 107/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher
 type rw106 rwState
 
@@ -3994,6 +5855,14 @@ func (w *rw106) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw106) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w106 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 108/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -4028,6 +5897,15 @@ func (w *rw107) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w107 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 109/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler
 type rw108 rwState
 
@@ -4055,6 +5933,14 @@ func (w *rw108) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw108) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w108 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 110/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -4089,6 +5975,15 @@ func (w *rw109) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w109 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 111/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw110 rwState
 
@@ -4119,6 +6014,15 @@ func (w *rw110) EnableFullDuplex() error {
 }
 func (w *rw110) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w110 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 112/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -4156,6 +6060,16 @@ func (w *rw111) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w111 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 113/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom
 type rw112 rwState
 
@@ -4177,6 +6091,13 @@ func (w *rw112) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw112) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w112 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 114/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -4205,6 +6126,14 @@ func (w *rw113) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w113 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 115/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw114 rwState
 
@@ -4229,6 +6158,14 @@ func (w *rw114) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw114) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w114 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 116/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -4260,6 +6197,15 @@ func (w *rw115) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w115 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 117/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw116 rwState
 
@@ -4284,6 +6230,14 @@ func (w *rw116) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw116) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w116 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 118/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -4315,6 +6269,15 @@ func (w *rw117) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w117 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 119/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw118 rwState
 
@@ -4342,6 +6305,15 @@ func (w *rw118) EnableFullDuplex() error {
 }
 func (w *rw118) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w118 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 120/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -4376,6 +6348,16 @@ func (w *rw119) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w119 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 121/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner
 type rw120 rwState
 
@@ -4403,6 +6385,14 @@ func (w *rw120) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw120) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w120 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 122/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -4437,6 +6427,15 @@ func (w *rw121) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w121 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 123/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw122 rwState
 
@@ -4467,6 +6466,15 @@ func (w *rw122) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw122) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w122 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 124/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -4504,6 +6512,16 @@ func (w *rw123) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w123 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 125/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw124 rwState
 
@@ -4534,6 +6552,15 @@ func (w *rw124) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw124) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w124 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 126/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -4571,6 +6598,16 @@ func (w *rw125) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w125 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 127/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw126 rwState
 
@@ -4604,6 +6641,16 @@ func (w *rw126) EnableFullDuplex() error {
 }
 func (w *rw126) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w126 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 128/512: http.ResponseWriter, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -4644,6 +6691,17 @@ func (w *rw127) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w127 struct {
+	http.ResponseWriter
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 129/512: http.ResponseWriter, httpFlushError
 type rw128 rwState
 
@@ -4659,6 +6717,11 @@ func (w *rw128) Write(b []byte) (int, error) {
 }
 func (w *rw128) FlushError() error {
 	return (*rwState)(w).doFlushError()
+}
+
+type w128 struct {
+	http.ResponseWriter
+	httpFlushError
 }
 
 // combination 130/512: http.ResponseWriter, httpFlushError, io.StringWriter
@@ -4681,6 +6744,12 @@ func (w *rw129) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w129 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.StringWriter
+}
+
 // combination 131/512: http.ResponseWriter, httpFlushError, http.Pusher
 type rw130 rwState
 
@@ -4699,6 +6768,12 @@ func (w *rw130) FlushError() error {
 }
 func (w *rw130) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w130 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Pusher
 }
 
 // combination 132/512: http.ResponseWriter, httpFlushError, http.Pusher, io.StringWriter
@@ -4724,6 +6799,13 @@ func (w *rw131) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w131 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 133/512: http.ResponseWriter, httpFlushError, fullDuplexEnabler
 type rw132 rwState
 
@@ -4742,6 +6824,12 @@ func (w *rw132) FlushError() error {
 }
 func (w *rw132) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w132 struct {
+	http.ResponseWriter
+	httpFlushError
+	fullDuplexEnabler
 }
 
 // combination 134/512: http.ResponseWriter, httpFlushError, fullDuplexEnabler, io.StringWriter
@@ -4767,6 +6855,13 @@ func (w *rw133) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w133 struct {
+	http.ResponseWriter
+	httpFlushError
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 135/512: http.ResponseWriter, httpFlushError, fullDuplexEnabler, http.Pusher
 type rw134 rwState
 
@@ -4788,6 +6883,13 @@ func (w *rw134) EnableFullDuplex() error {
 }
 func (w *rw134) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w134 struct {
+	http.ResponseWriter
+	httpFlushError
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 136/512: http.ResponseWriter, httpFlushError, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -4816,6 +6918,14 @@ func (w *rw135) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w135 struct {
+	http.ResponseWriter
+	httpFlushError
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 137/512: http.ResponseWriter, httpFlushError, deadliner
 type rw136 rwState
 
@@ -4837,6 +6947,12 @@ func (w *rw136) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw136) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w136 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
 }
 
 // combination 138/512: http.ResponseWriter, httpFlushError, deadliner, io.StringWriter
@@ -4865,6 +6981,13 @@ func (w *rw137) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w137 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	io.StringWriter
+}
+
 // combination 139/512: http.ResponseWriter, httpFlushError, deadliner, http.Pusher
 type rw138 rwState
 
@@ -4889,6 +7012,13 @@ func (w *rw138) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw138) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w138 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	http.Pusher
 }
 
 // combination 140/512: http.ResponseWriter, httpFlushError, deadliner, http.Pusher, io.StringWriter
@@ -4920,6 +7050,14 @@ func (w *rw139) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w139 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 141/512: http.ResponseWriter, httpFlushError, deadliner, fullDuplexEnabler
 type rw140 rwState
 
@@ -4944,6 +7082,13 @@ func (w *rw140) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw140) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w140 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 142/512: http.ResponseWriter, httpFlushError, deadliner, fullDuplexEnabler, io.StringWriter
@@ -4975,6 +7120,14 @@ func (w *rw141) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w141 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 143/512: http.ResponseWriter, httpFlushError, deadliner, fullDuplexEnabler, http.Pusher
 type rw142 rwState
 
@@ -5002,6 +7155,14 @@ func (w *rw142) EnableFullDuplex() error {
 }
 func (w *rw142) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w142 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 144/512: http.ResponseWriter, httpFlushError, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -5036,6 +7197,15 @@ func (w *rw143) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w143 struct {
+	http.ResponseWriter
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 145/512: http.ResponseWriter, httpFlushError, io.ReaderFrom
 type rw144 rwState
 
@@ -5054,6 +7224,12 @@ func (w *rw144) FlushError() error {
 }
 func (w *rw144) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w144 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
 }
 
 // combination 146/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, io.StringWriter
@@ -5079,6 +7255,13 @@ func (w *rw145) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w145 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 147/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, http.Pusher
 type rw146 rwState
 
@@ -5100,6 +7283,13 @@ func (w *rw146) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw146) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w146 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 148/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -5128,6 +7318,14 @@ func (w *rw147) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w147 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 149/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, fullDuplexEnabler
 type rw148 rwState
 
@@ -5149,6 +7347,13 @@ func (w *rw148) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw148) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w148 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 150/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -5177,6 +7382,14 @@ func (w *rw149) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w149 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 151/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw150 rwState
 
@@ -5201,6 +7414,14 @@ func (w *rw150) EnableFullDuplex() error {
 }
 func (w *rw150) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w150 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 152/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -5232,6 +7453,15 @@ func (w *rw151) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w151 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 153/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner
 type rw152 rwState
 
@@ -5256,6 +7486,13 @@ func (w *rw152) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw152) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w152 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 154/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, io.StringWriter
@@ -5287,6 +7524,14 @@ func (w *rw153) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w153 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 155/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, http.Pusher
 type rw154 rwState
 
@@ -5314,6 +7559,14 @@ func (w *rw154) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw154) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w154 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 156/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -5348,6 +7601,15 @@ func (w *rw155) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w155 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 157/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw156 rwState
 
@@ -5375,6 +7637,14 @@ func (w *rw156) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw156) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w156 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 158/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -5409,6 +7679,15 @@ func (w *rw157) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w157 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 159/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw158 rwState
 
@@ -5439,6 +7718,15 @@ func (w *rw158) EnableFullDuplex() error {
 }
 func (w *rw158) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w158 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 160/512: http.ResponseWriter, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -5476,6 +7764,16 @@ func (w *rw159) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w159 struct {
+	http.ResponseWriter
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 161/512: http.ResponseWriter, httpFlushError, http.Hijacker
 type rw160 rwState
 
@@ -5494,6 +7792,12 @@ func (w *rw160) FlushError() error {
 }
 func (w *rw160) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w160 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
 }
 
 // combination 162/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.StringWriter
@@ -5519,6 +7823,13 @@ func (w *rw161) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w161 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 163/512: http.ResponseWriter, httpFlushError, http.Hijacker, http.Pusher
 type rw162 rwState
 
@@ -5540,6 +7851,13 @@ func (w *rw162) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw162) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w162 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 164/512: http.ResponseWriter, httpFlushError, http.Hijacker, http.Pusher, io.StringWriter
@@ -5568,6 +7886,14 @@ func (w *rw163) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w163 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 165/512: http.ResponseWriter, httpFlushError, http.Hijacker, fullDuplexEnabler
 type rw164 rwState
 
@@ -5589,6 +7915,13 @@ func (w *rw164) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw164) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w164 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 166/512: http.ResponseWriter, httpFlushError, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -5617,6 +7950,14 @@ func (w *rw165) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w165 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 167/512: http.ResponseWriter, httpFlushError, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw166 rwState
 
@@ -5641,6 +7982,14 @@ func (w *rw166) EnableFullDuplex() error {
 }
 func (w *rw166) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w166 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 168/512: http.ResponseWriter, httpFlushError, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -5672,6 +8021,15 @@ func (w *rw167) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w167 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 169/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner
 type rw168 rwState
 
@@ -5696,6 +8054,13 @@ func (w *rw168) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw168) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w168 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
 }
 
 // combination 170/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, io.StringWriter
@@ -5727,6 +8092,14 @@ func (w *rw169) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w169 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 171/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, http.Pusher
 type rw170 rwState
 
@@ -5754,6 +8127,14 @@ func (w *rw170) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw170) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w170 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 172/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -5788,6 +8169,15 @@ func (w *rw171) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w171 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 173/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler
 type rw172 rwState
 
@@ -5815,6 +8205,14 @@ func (w *rw172) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw172) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w172 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 174/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -5849,6 +8247,15 @@ func (w *rw173) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w173 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 175/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw174 rwState
 
@@ -5879,6 +8286,15 @@ func (w *rw174) EnableFullDuplex() error {
 }
 func (w *rw174) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w174 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 176/512: http.ResponseWriter, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -5916,6 +8332,16 @@ func (w *rw175) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w175 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 177/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom
 type rw176 rwState
 
@@ -5937,6 +8363,13 @@ func (w *rw176) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw176) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w176 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 178/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -5965,6 +8398,14 @@ func (w *rw177) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w177 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 179/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw178 rwState
 
@@ -5989,6 +8430,14 @@ func (w *rw178) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw178) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w178 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 180/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -6020,6 +8469,15 @@ func (w *rw179) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w179 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 181/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw180 rwState
 
@@ -6044,6 +8502,14 @@ func (w *rw180) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw180) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w180 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 182/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -6075,6 +8541,15 @@ func (w *rw181) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w181 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 183/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw182 rwState
 
@@ -6102,6 +8577,15 @@ func (w *rw182) EnableFullDuplex() error {
 }
 func (w *rw182) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w182 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 184/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -6136,6 +8620,16 @@ func (w *rw183) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w183 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 185/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner
 type rw184 rwState
 
@@ -6163,6 +8657,14 @@ func (w *rw184) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw184) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w184 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 186/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -6197,6 +8699,15 @@ func (w *rw185) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w185 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 187/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw186 rwState
 
@@ -6227,6 +8738,15 @@ func (w *rw186) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw186) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w186 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 188/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -6264,6 +8784,16 @@ func (w *rw187) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w187 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 189/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw188 rwState
 
@@ -6294,6 +8824,15 @@ func (w *rw188) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw188) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w188 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 190/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -6331,6 +8870,16 @@ func (w *rw189) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w189 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 191/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw190 rwState
 
@@ -6364,6 +8913,16 @@ func (w *rw190) EnableFullDuplex() error {
 }
 func (w *rw190) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w190 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 192/512: http.ResponseWriter, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -6404,6 +8963,17 @@ func (w *rw191) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w191 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 193/512: http.ResponseWriter, httpFlushError, http.CloseNotifier
 type rw192 rwState
 
@@ -6422,6 +8992,12 @@ func (w *rw192) FlushError() error {
 }
 func (w *rw192) CloseNotify() <-chan bool {
 	return (*rwState)(w).doCloseNotify()
+}
+
+type w192 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
 }
 
 // combination 194/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.StringWriter
@@ -6447,6 +9023,13 @@ func (w *rw193) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w193 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.StringWriter
+}
+
 // combination 195/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Pusher
 type rw194 rwState
 
@@ -6468,6 +9051,13 @@ func (w *rw194) CloseNotify() <-chan bool {
 }
 func (w *rw194) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w194 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Pusher
 }
 
 // combination 196/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Pusher, io.StringWriter
@@ -6496,6 +9086,14 @@ func (w *rw195) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w195 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 197/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, fullDuplexEnabler
 type rw196 rwState
 
@@ -6517,6 +9115,13 @@ func (w *rw196) CloseNotify() <-chan bool {
 }
 func (w *rw196) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w196 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
 }
 
 // combination 198/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, fullDuplexEnabler, io.StringWriter
@@ -6545,6 +9150,14 @@ func (w *rw197) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w197 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 199/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, fullDuplexEnabler, http.Pusher
 type rw198 rwState
 
@@ -6569,6 +9182,14 @@ func (w *rw198) EnableFullDuplex() error {
 }
 func (w *rw198) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w198 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 200/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -6600,6 +9221,15 @@ func (w *rw199) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w199 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 201/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner
 type rw200 rwState
 
@@ -6624,6 +9254,13 @@ func (w *rw200) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw200) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w200 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
 }
 
 // combination 202/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, io.StringWriter
@@ -6655,6 +9292,14 @@ func (w *rw201) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w201 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	io.StringWriter
+}
+
 // combination 203/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, http.Pusher
 type rw202 rwState
 
@@ -6682,6 +9327,14 @@ func (w *rw202) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw202) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w202 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	http.Pusher
 }
 
 // combination 204/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, http.Pusher, io.StringWriter
@@ -6716,6 +9369,15 @@ func (w *rw203) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w203 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 205/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler
 type rw204 rwState
 
@@ -6743,6 +9405,14 @@ func (w *rw204) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw204) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w204 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 206/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, io.StringWriter
@@ -6777,6 +9447,15 @@ func (w *rw205) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w205 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 207/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher
 type rw206 rwState
 
@@ -6807,6 +9486,15 @@ func (w *rw206) EnableFullDuplex() error {
 }
 func (w *rw206) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w206 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 208/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -6844,6 +9532,16 @@ func (w *rw207) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w207 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 209/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom
 type rw208 rwState
 
@@ -6865,6 +9563,13 @@ func (w *rw208) CloseNotify() <-chan bool {
 }
 func (w *rw208) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w208 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
 }
 
 // combination 210/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, io.StringWriter
@@ -6893,6 +9598,14 @@ func (w *rw209) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w209 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 211/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, http.Pusher
 type rw210 rwState
 
@@ -6917,6 +9630,14 @@ func (w *rw210) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw210) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w210 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 212/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -6948,6 +9669,15 @@ func (w *rw211) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w211 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 213/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler
 type rw212 rwState
 
@@ -6972,6 +9702,14 @@ func (w *rw212) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw212) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w212 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 214/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -7003,6 +9741,15 @@ func (w *rw213) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w213 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 215/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw214 rwState
 
@@ -7030,6 +9777,15 @@ func (w *rw214) EnableFullDuplex() error {
 }
 func (w *rw214) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w214 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 216/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -7064,6 +9820,16 @@ func (w *rw215) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w215 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 217/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner
 type rw216 rwState
 
@@ -7091,6 +9857,14 @@ func (w *rw216) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw216) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w216 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 218/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, io.StringWriter
@@ -7125,6 +9899,15 @@ func (w *rw217) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w217 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 219/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher
 type rw218 rwState
 
@@ -7155,6 +9938,15 @@ func (w *rw218) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw218) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w218 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 220/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -7192,6 +9984,16 @@ func (w *rw219) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w219 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 221/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw220 rwState
 
@@ -7222,6 +10024,15 @@ func (w *rw220) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw220) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w220 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 222/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -7259,6 +10070,16 @@ func (w *rw221) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w221 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 223/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw222 rwState
 
@@ -7292,6 +10113,16 @@ func (w *rw222) EnableFullDuplex() error {
 }
 func (w *rw222) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w222 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 224/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -7332,6 +10163,17 @@ func (w *rw223) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w223 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 225/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker
 type rw224 rwState
 
@@ -7353,6 +10195,13 @@ func (w *rw224) CloseNotify() <-chan bool {
 }
 func (w *rw224) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w224 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
 }
 
 // combination 226/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.StringWriter
@@ -7381,6 +10230,14 @@ func (w *rw225) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w225 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 227/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, http.Pusher
 type rw226 rwState
 
@@ -7405,6 +10262,14 @@ func (w *rw226) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw226) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w226 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 228/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, http.Pusher, io.StringWriter
@@ -7436,6 +10301,15 @@ func (w *rw227) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w227 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 229/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler
 type rw228 rwState
 
@@ -7460,6 +10334,14 @@ func (w *rw228) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw228) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w228 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 230/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -7491,6 +10373,15 @@ func (w *rw229) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w229 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 231/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw230 rwState
 
@@ -7518,6 +10409,15 @@ func (w *rw230) EnableFullDuplex() error {
 }
 func (w *rw230) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w230 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 232/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -7552,6 +10452,16 @@ func (w *rw231) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w231 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 233/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner
 type rw232 rwState
 
@@ -7579,6 +10489,14 @@ func (w *rw232) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw232) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w232 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
 }
 
 // combination 234/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, io.StringWriter
@@ -7613,6 +10531,15 @@ func (w *rw233) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w233 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 235/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher
 type rw234 rwState
 
@@ -7643,6 +10570,15 @@ func (w *rw234) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw234) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w234 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 236/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -7680,6 +10616,16 @@ func (w *rw235) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w235 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 237/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler
 type rw236 rwState
 
@@ -7710,6 +10656,15 @@ func (w *rw236) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw236) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w236 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 238/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -7747,6 +10702,16 @@ func (w *rw237) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w237 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 239/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw238 rwState
 
@@ -7780,6 +10745,16 @@ func (w *rw238) EnableFullDuplex() error {
 }
 func (w *rw238) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w238 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 240/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -7820,6 +10795,17 @@ func (w *rw239) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w239 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 241/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom
 type rw240 rwState
 
@@ -7844,6 +10830,14 @@ func (w *rw240) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw240) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w240 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 242/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -7875,6 +10869,15 @@ func (w *rw241) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w241 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 243/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw242 rwState
 
@@ -7902,6 +10905,15 @@ func (w *rw242) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw242) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w242 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 244/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -7936,6 +10948,16 @@ func (w *rw243) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w243 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 245/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw244 rwState
 
@@ -7963,6 +10985,15 @@ func (w *rw244) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw244) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w244 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 246/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -7997,6 +11028,16 @@ func (w *rw245) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w245 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 247/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw246 rwState
 
@@ -8027,6 +11068,16 @@ func (w *rw246) EnableFullDuplex() error {
 }
 func (w *rw246) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w246 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 248/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -8064,6 +11115,17 @@ func (w *rw247) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w247 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 249/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner
 type rw248 rwState
 
@@ -8094,6 +11156,15 @@ func (w *rw248) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw248) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w248 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 250/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -8131,6 +11202,16 @@ func (w *rw249) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w249 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 251/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw250 rwState
 
@@ -8164,6 +11245,16 @@ func (w *rw250) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw250) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w250 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 252/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -8204,6 +11295,17 @@ func (w *rw251) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w251 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 253/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw252 rwState
 
@@ -8237,6 +11339,16 @@ func (w *rw252) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw252) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w252 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 254/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -8277,6 +11389,17 @@ func (w *rw253) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w253 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 255/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw254 rwState
 
@@ -8313,6 +11436,17 @@ func (w *rw254) EnableFullDuplex() error {
 }
 func (w *rw254) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w254 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 256/512: http.ResponseWriter, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -8356,6 +11490,18 @@ func (w *rw255) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w255 struct {
+	http.ResponseWriter
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 257/512: http.ResponseWriter, http.Flusher
 type rw256 rwState
 
@@ -8371,6 +11517,11 @@ func (w *rw256) Write(b []byte) (int, error) {
 }
 func (w *rw256) Flush() {
 	(*rwState)(w).doFlush()
+}
+
+type w256 struct {
+	http.ResponseWriter
+	http.Flusher
 }
 
 // combination 258/512: http.ResponseWriter, http.Flusher, io.StringWriter
@@ -8393,6 +11544,12 @@ func (w *rw257) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w257 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.StringWriter
+}
+
 // combination 259/512: http.ResponseWriter, http.Flusher, http.Pusher
 type rw258 rwState
 
@@ -8411,6 +11568,12 @@ func (w *rw258) Flush() {
 }
 func (w *rw258) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w258 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Pusher
 }
 
 // combination 260/512: http.ResponseWriter, http.Flusher, http.Pusher, io.StringWriter
@@ -8436,6 +11599,13 @@ func (w *rw259) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w259 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 261/512: http.ResponseWriter, http.Flusher, fullDuplexEnabler
 type rw260 rwState
 
@@ -8454,6 +11624,12 @@ func (w *rw260) Flush() {
 }
 func (w *rw260) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w260 struct {
+	http.ResponseWriter
+	http.Flusher
+	fullDuplexEnabler
 }
 
 // combination 262/512: http.ResponseWriter, http.Flusher, fullDuplexEnabler, io.StringWriter
@@ -8479,6 +11655,13 @@ func (w *rw261) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w261 struct {
+	http.ResponseWriter
+	http.Flusher
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 263/512: http.ResponseWriter, http.Flusher, fullDuplexEnabler, http.Pusher
 type rw262 rwState
 
@@ -8500,6 +11683,13 @@ func (w *rw262) EnableFullDuplex() error {
 }
 func (w *rw262) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w262 struct {
+	http.ResponseWriter
+	http.Flusher
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 264/512: http.ResponseWriter, http.Flusher, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -8528,6 +11718,14 @@ func (w *rw263) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w263 struct {
+	http.ResponseWriter
+	http.Flusher
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 265/512: http.ResponseWriter, http.Flusher, deadliner
 type rw264 rwState
 
@@ -8549,6 +11747,12 @@ func (w *rw264) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw264) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w264 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
 }
 
 // combination 266/512: http.ResponseWriter, http.Flusher, deadliner, io.StringWriter
@@ -8577,6 +11781,13 @@ func (w *rw265) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w265 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	io.StringWriter
+}
+
 // combination 267/512: http.ResponseWriter, http.Flusher, deadliner, http.Pusher
 type rw266 rwState
 
@@ -8601,6 +11812,13 @@ func (w *rw266) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw266) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w266 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	http.Pusher
 }
 
 // combination 268/512: http.ResponseWriter, http.Flusher, deadliner, http.Pusher, io.StringWriter
@@ -8632,6 +11850,14 @@ func (w *rw267) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w267 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 269/512: http.ResponseWriter, http.Flusher, deadliner, fullDuplexEnabler
 type rw268 rwState
 
@@ -8656,6 +11882,13 @@ func (w *rw268) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw268) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w268 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 270/512: http.ResponseWriter, http.Flusher, deadliner, fullDuplexEnabler, io.StringWriter
@@ -8687,6 +11920,14 @@ func (w *rw269) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w269 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 271/512: http.ResponseWriter, http.Flusher, deadliner, fullDuplexEnabler, http.Pusher
 type rw270 rwState
 
@@ -8714,6 +11955,14 @@ func (w *rw270) EnableFullDuplex() error {
 }
 func (w *rw270) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w270 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 272/512: http.ResponseWriter, http.Flusher, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -8748,6 +11997,15 @@ func (w *rw271) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w271 struct {
+	http.ResponseWriter
+	http.Flusher
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 273/512: http.ResponseWriter, http.Flusher, io.ReaderFrom
 type rw272 rwState
 
@@ -8766,6 +12024,12 @@ func (w *rw272) Flush() {
 }
 func (w *rw272) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w272 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
 }
 
 // combination 274/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, io.StringWriter
@@ -8791,6 +12055,13 @@ func (w *rw273) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w273 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 275/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, http.Pusher
 type rw274 rwState
 
@@ -8812,6 +12083,13 @@ func (w *rw274) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw274) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w274 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 276/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -8840,6 +12118,14 @@ func (w *rw275) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w275 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 277/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, fullDuplexEnabler
 type rw276 rwState
 
@@ -8861,6 +12147,13 @@ func (w *rw276) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw276) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w276 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 278/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -8889,6 +12182,14 @@ func (w *rw277) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w277 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 279/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw278 rwState
 
@@ -8913,6 +12214,14 @@ func (w *rw278) EnableFullDuplex() error {
 }
 func (w *rw278) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w278 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 280/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -8944,6 +12253,15 @@ func (w *rw279) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w279 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 281/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner
 type rw280 rwState
 
@@ -8968,6 +12286,13 @@ func (w *rw280) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw280) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w280 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 282/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, io.StringWriter
@@ -8999,6 +12324,14 @@ func (w *rw281) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w281 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 283/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, http.Pusher
 type rw282 rwState
 
@@ -9026,6 +12359,14 @@ func (w *rw282) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw282) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w282 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 284/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -9060,6 +12401,15 @@ func (w *rw283) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w283 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 285/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw284 rwState
 
@@ -9087,6 +12437,14 @@ func (w *rw284) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw284) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w284 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 286/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -9121,6 +12479,15 @@ func (w *rw285) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w285 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 287/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw286 rwState
 
@@ -9151,6 +12518,15 @@ func (w *rw286) EnableFullDuplex() error {
 }
 func (w *rw286) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w286 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 288/512: http.ResponseWriter, http.Flusher, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -9188,6 +12564,16 @@ func (w *rw287) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w287 struct {
+	http.ResponseWriter
+	http.Flusher
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 289/512: http.ResponseWriter, http.Flusher, http.Hijacker
 type rw288 rwState
 
@@ -9206,6 +12592,12 @@ func (w *rw288) Flush() {
 }
 func (w *rw288) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w288 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
 }
 
 // combination 290/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.StringWriter
@@ -9231,6 +12623,13 @@ func (w *rw289) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w289 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 291/512: http.ResponseWriter, http.Flusher, http.Hijacker, http.Pusher
 type rw290 rwState
 
@@ -9252,6 +12651,13 @@ func (w *rw290) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw290) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w290 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 292/512: http.ResponseWriter, http.Flusher, http.Hijacker, http.Pusher, io.StringWriter
@@ -9280,6 +12686,14 @@ func (w *rw291) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w291 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 293/512: http.ResponseWriter, http.Flusher, http.Hijacker, fullDuplexEnabler
 type rw292 rwState
 
@@ -9301,6 +12715,13 @@ func (w *rw292) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw292) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w292 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 294/512: http.ResponseWriter, http.Flusher, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -9329,6 +12750,14 @@ func (w *rw293) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w293 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 295/512: http.ResponseWriter, http.Flusher, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw294 rwState
 
@@ -9353,6 +12782,14 @@ func (w *rw294) EnableFullDuplex() error {
 }
 func (w *rw294) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w294 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 296/512: http.ResponseWriter, http.Flusher, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -9384,6 +12821,15 @@ func (w *rw295) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w295 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 297/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner
 type rw296 rwState
 
@@ -9408,6 +12854,13 @@ func (w *rw296) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw296) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w296 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
 }
 
 // combination 298/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, io.StringWriter
@@ -9439,6 +12892,14 @@ func (w *rw297) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w297 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 299/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, http.Pusher
 type rw298 rwState
 
@@ -9466,6 +12927,14 @@ func (w *rw298) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw298) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w298 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 300/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -9500,6 +12969,15 @@ func (w *rw299) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w299 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 301/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, fullDuplexEnabler
 type rw300 rwState
 
@@ -9527,6 +13005,14 @@ func (w *rw300) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw300) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w300 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 302/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -9561,6 +13047,15 @@ func (w *rw301) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w301 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 303/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw302 rwState
 
@@ -9591,6 +13086,15 @@ func (w *rw302) EnableFullDuplex() error {
 }
 func (w *rw302) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w302 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 304/512: http.ResponseWriter, http.Flusher, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -9628,6 +13132,16 @@ func (w *rw303) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w303 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 305/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom
 type rw304 rwState
 
@@ -9649,6 +13163,13 @@ func (w *rw304) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw304) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w304 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 306/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -9677,6 +13198,14 @@ func (w *rw305) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w305 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 307/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw306 rwState
 
@@ -9701,6 +13230,14 @@ func (w *rw306) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw306) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w306 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 308/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -9732,6 +13269,15 @@ func (w *rw307) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w307 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 309/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw308 rwState
 
@@ -9756,6 +13302,14 @@ func (w *rw308) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw308) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w308 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 310/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -9787,6 +13341,15 @@ func (w *rw309) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w309 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 311/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw310 rwState
 
@@ -9814,6 +13377,15 @@ func (w *rw310) EnableFullDuplex() error {
 }
 func (w *rw310) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w310 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 312/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -9848,6 +13420,16 @@ func (w *rw311) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w311 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 313/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner
 type rw312 rwState
 
@@ -9875,6 +13457,14 @@ func (w *rw312) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw312) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w312 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 314/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -9909,6 +13499,15 @@ func (w *rw313) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w313 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 315/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw314 rwState
 
@@ -9939,6 +13538,15 @@ func (w *rw314) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw314) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w314 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 316/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -9976,6 +13584,16 @@ func (w *rw315) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w315 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 317/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw316 rwState
 
@@ -10006,6 +13624,15 @@ func (w *rw316) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw316) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w316 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 318/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -10043,6 +13670,16 @@ func (w *rw317) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w317 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 319/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw318 rwState
 
@@ -10076,6 +13713,16 @@ func (w *rw318) EnableFullDuplex() error {
 }
 func (w *rw318) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w318 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 320/512: http.ResponseWriter, http.Flusher, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -10116,6 +13763,17 @@ func (w *rw319) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w319 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 321/512: http.ResponseWriter, http.Flusher, http.CloseNotifier
 type rw320 rwState
 
@@ -10134,6 +13792,12 @@ func (w *rw320) Flush() {
 }
 func (w *rw320) CloseNotify() <-chan bool {
 	return (*rwState)(w).doCloseNotify()
+}
+
+type w320 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
 }
 
 // combination 322/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.StringWriter
@@ -10159,6 +13823,13 @@ func (w *rw321) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w321 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.StringWriter
+}
+
 // combination 323/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Pusher
 type rw322 rwState
 
@@ -10180,6 +13851,13 @@ func (w *rw322) CloseNotify() <-chan bool {
 }
 func (w *rw322) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w322 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Pusher
 }
 
 // combination 324/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Pusher, io.StringWriter
@@ -10208,6 +13886,14 @@ func (w *rw323) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w323 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 325/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, fullDuplexEnabler
 type rw324 rwState
 
@@ -10229,6 +13915,13 @@ func (w *rw324) CloseNotify() <-chan bool {
 }
 func (w *rw324) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w324 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	fullDuplexEnabler
 }
 
 // combination 326/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, fullDuplexEnabler, io.StringWriter
@@ -10257,6 +13950,14 @@ func (w *rw325) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w325 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 327/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, fullDuplexEnabler, http.Pusher
 type rw326 rwState
 
@@ -10281,6 +13982,14 @@ func (w *rw326) EnableFullDuplex() error {
 }
 func (w *rw326) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w326 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 328/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -10312,6 +14021,15 @@ func (w *rw327) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w327 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 329/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner
 type rw328 rwState
 
@@ -10336,6 +14054,13 @@ func (w *rw328) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw328) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w328 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
 }
 
 // combination 330/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, io.StringWriter
@@ -10367,6 +14092,14 @@ func (w *rw329) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w329 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	io.StringWriter
+}
+
 // combination 331/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, http.Pusher
 type rw330 rwState
 
@@ -10394,6 +14127,14 @@ func (w *rw330) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw330) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w330 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	http.Pusher
 }
 
 // combination 332/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, http.Pusher, io.StringWriter
@@ -10428,6 +14169,15 @@ func (w *rw331) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w331 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 333/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, fullDuplexEnabler
 type rw332 rwState
 
@@ -10455,6 +14205,14 @@ func (w *rw332) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw332) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w332 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 334/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, fullDuplexEnabler, io.StringWriter
@@ -10489,6 +14247,15 @@ func (w *rw333) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w333 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 335/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher
 type rw334 rwState
 
@@ -10519,6 +14286,15 @@ func (w *rw334) EnableFullDuplex() error {
 }
 func (w *rw334) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w334 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 336/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -10556,6 +14332,16 @@ func (w *rw335) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w335 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 337/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom
 type rw336 rwState
 
@@ -10577,6 +14363,13 @@ func (w *rw336) CloseNotify() <-chan bool {
 }
 func (w *rw336) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w336 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
 }
 
 // combination 338/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, io.StringWriter
@@ -10605,6 +14398,14 @@ func (w *rw337) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w337 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 339/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, http.Pusher
 type rw338 rwState
 
@@ -10629,6 +14430,14 @@ func (w *rw338) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw338) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w338 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 340/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -10660,6 +14469,15 @@ func (w *rw339) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w339 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 341/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler
 type rw340 rwState
 
@@ -10684,6 +14502,14 @@ func (w *rw340) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw340) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w340 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 342/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -10715,6 +14541,15 @@ func (w *rw341) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w341 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 343/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw342 rwState
 
@@ -10742,6 +14577,15 @@ func (w *rw342) EnableFullDuplex() error {
 }
 func (w *rw342) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w342 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 344/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -10776,6 +14620,16 @@ func (w *rw343) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w343 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 345/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner
 type rw344 rwState
 
@@ -10803,6 +14657,14 @@ func (w *rw344) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw344) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w344 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 346/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, io.StringWriter
@@ -10837,6 +14699,15 @@ func (w *rw345) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w345 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 347/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher
 type rw346 rwState
 
@@ -10867,6 +14738,15 @@ func (w *rw346) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw346) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w346 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 348/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -10904,6 +14784,16 @@ func (w *rw347) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w347 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 349/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw348 rwState
 
@@ -10934,6 +14824,15 @@ func (w *rw348) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw348) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w348 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 350/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -10971,6 +14870,16 @@ func (w *rw349) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w349 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 351/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw350 rwState
 
@@ -11004,6 +14913,16 @@ func (w *rw350) EnableFullDuplex() error {
 }
 func (w *rw350) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w350 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 352/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -11044,6 +14963,17 @@ func (w *rw351) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w351 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 353/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker
 type rw352 rwState
 
@@ -11065,6 +14995,13 @@ func (w *rw352) CloseNotify() <-chan bool {
 }
 func (w *rw352) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w352 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
 }
 
 // combination 354/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.StringWriter
@@ -11093,6 +15030,14 @@ func (w *rw353) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w353 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 355/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, http.Pusher
 type rw354 rwState
 
@@ -11117,6 +15062,14 @@ func (w *rw354) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw354) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w354 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 356/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, http.Pusher, io.StringWriter
@@ -11148,6 +15101,15 @@ func (w *rw355) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w355 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 357/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, fullDuplexEnabler
 type rw356 rwState
 
@@ -11172,6 +15134,14 @@ func (w *rw356) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw356) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w356 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 358/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -11203,6 +15173,15 @@ func (w *rw357) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w357 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 359/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw358 rwState
 
@@ -11230,6 +15209,15 @@ func (w *rw358) EnableFullDuplex() error {
 }
 func (w *rw358) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w358 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 360/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -11264,6 +15252,16 @@ func (w *rw359) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w359 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 361/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner
 type rw360 rwState
 
@@ -11291,6 +15289,14 @@ func (w *rw360) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw360) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w360 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
 }
 
 // combination 362/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, io.StringWriter
@@ -11325,6 +15331,15 @@ func (w *rw361) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w361 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 363/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher
 type rw362 rwState
 
@@ -11355,6 +15370,15 @@ func (w *rw362) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw362) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w362 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 364/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -11392,6 +15416,16 @@ func (w *rw363) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w363 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 365/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler
 type rw364 rwState
 
@@ -11422,6 +15456,15 @@ func (w *rw364) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw364) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w364 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 366/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -11459,6 +15502,16 @@ func (w *rw365) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w365 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 367/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw366 rwState
 
@@ -11492,6 +15545,16 @@ func (w *rw366) EnableFullDuplex() error {
 }
 func (w *rw366) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w366 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 368/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -11532,6 +15595,17 @@ func (w *rw367) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w367 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 369/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom
 type rw368 rwState
 
@@ -11556,6 +15630,14 @@ func (w *rw368) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw368) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w368 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 370/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -11587,6 +15669,15 @@ func (w *rw369) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w369 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 371/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw370 rwState
 
@@ -11614,6 +15705,15 @@ func (w *rw370) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw370) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w370 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 372/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -11648,6 +15748,16 @@ func (w *rw371) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w371 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 373/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw372 rwState
 
@@ -11675,6 +15785,15 @@ func (w *rw372) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw372) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w372 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 374/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -11709,6 +15828,16 @@ func (w *rw373) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w373 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 375/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw374 rwState
 
@@ -11739,6 +15868,16 @@ func (w *rw374) EnableFullDuplex() error {
 }
 func (w *rw374) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w374 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 376/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -11776,6 +15915,17 @@ func (w *rw375) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w375 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 377/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner
 type rw376 rwState
 
@@ -11806,6 +15956,15 @@ func (w *rw376) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw376) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w376 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 378/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -11843,6 +16002,16 @@ func (w *rw377) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w377 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 379/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw378 rwState
 
@@ -11876,6 +16045,16 @@ func (w *rw378) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw378) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w378 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 380/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -11916,6 +16095,17 @@ func (w *rw379) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w379 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 381/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw380 rwState
 
@@ -11949,6 +16139,16 @@ func (w *rw380) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw380) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w380 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 382/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -11989,6 +16189,17 @@ func (w *rw381) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w381 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 383/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw382 rwState
 
@@ -12025,6 +16236,17 @@ func (w *rw382) EnableFullDuplex() error {
 }
 func (w *rw382) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w382 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 384/512: http.ResponseWriter, http.Flusher, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -12068,6 +16290,18 @@ func (w *rw383) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w383 struct {
+	http.ResponseWriter
+	http.Flusher
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 385/512: http.ResponseWriter, http.Flusher, httpFlushError
 type rw384 rwState
 
@@ -12086,6 +16320,12 @@ func (w *rw384) Flush() {
 }
 func (w *rw384) FlushError() error {
 	return (*rwState)(w).doFlushError()
+}
+
+type w384 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
 }
 
 // combination 386/512: http.ResponseWriter, http.Flusher, httpFlushError, io.StringWriter
@@ -12111,6 +16351,13 @@ func (w *rw385) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w385 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.StringWriter
+}
+
 // combination 387/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Pusher
 type rw386 rwState
 
@@ -12132,6 +16379,13 @@ func (w *rw386) FlushError() error {
 }
 func (w *rw386) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w386 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Pusher
 }
 
 // combination 388/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Pusher, io.StringWriter
@@ -12160,6 +16414,14 @@ func (w *rw387) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w387 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 389/512: http.ResponseWriter, http.Flusher, httpFlushError, fullDuplexEnabler
 type rw388 rwState
 
@@ -12181,6 +16443,13 @@ func (w *rw388) FlushError() error {
 }
 func (w *rw388) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w388 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	fullDuplexEnabler
 }
 
 // combination 390/512: http.ResponseWriter, http.Flusher, httpFlushError, fullDuplexEnabler, io.StringWriter
@@ -12209,6 +16478,14 @@ func (w *rw389) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w389 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 391/512: http.ResponseWriter, http.Flusher, httpFlushError, fullDuplexEnabler, http.Pusher
 type rw390 rwState
 
@@ -12233,6 +16510,14 @@ func (w *rw390) EnableFullDuplex() error {
 }
 func (w *rw390) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w390 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 392/512: http.ResponseWriter, http.Flusher, httpFlushError, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -12264,6 +16549,15 @@ func (w *rw391) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w391 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 393/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner
 type rw392 rwState
 
@@ -12288,6 +16582,13 @@ func (w *rw392) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw392) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w392 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
 }
 
 // combination 394/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, io.StringWriter
@@ -12319,6 +16620,14 @@ func (w *rw393) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w393 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	io.StringWriter
+}
+
 // combination 395/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, http.Pusher
 type rw394 rwState
 
@@ -12346,6 +16655,14 @@ func (w *rw394) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw394) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w394 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	http.Pusher
 }
 
 // combination 396/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, http.Pusher, io.StringWriter
@@ -12380,6 +16697,15 @@ func (w *rw395) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w395 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 397/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, fullDuplexEnabler
 type rw396 rwState
 
@@ -12407,6 +16733,14 @@ func (w *rw396) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw396) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w396 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 398/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, fullDuplexEnabler, io.StringWriter
@@ -12441,6 +16775,15 @@ func (w *rw397) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w397 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 399/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, fullDuplexEnabler, http.Pusher
 type rw398 rwState
 
@@ -12471,6 +16814,15 @@ func (w *rw398) EnableFullDuplex() error {
 }
 func (w *rw398) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w398 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 400/512: http.ResponseWriter, http.Flusher, httpFlushError, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -12508,6 +16860,16 @@ func (w *rw399) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w399 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 401/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom
 type rw400 rwState
 
@@ -12529,6 +16891,13 @@ func (w *rw400) FlushError() error {
 }
 func (w *rw400) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w400 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
 }
 
 // combination 402/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, io.StringWriter
@@ -12557,6 +16926,14 @@ func (w *rw401) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w401 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 403/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, http.Pusher
 type rw402 rwState
 
@@ -12581,6 +16958,14 @@ func (w *rw402) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw402) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w402 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 404/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -12612,6 +16997,15 @@ func (w *rw403) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w403 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 405/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, fullDuplexEnabler
 type rw404 rwState
 
@@ -12636,6 +17030,14 @@ func (w *rw404) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw404) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w404 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 406/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -12667,6 +17069,15 @@ func (w *rw405) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w405 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 407/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw406 rwState
 
@@ -12694,6 +17105,15 @@ func (w *rw406) EnableFullDuplex() error {
 }
 func (w *rw406) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w406 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 408/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -12728,6 +17148,16 @@ func (w *rw407) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w407 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 409/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner
 type rw408 rwState
 
@@ -12755,6 +17185,14 @@ func (w *rw408) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw408) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w408 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 410/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, io.StringWriter
@@ -12789,6 +17227,15 @@ func (w *rw409) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w409 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 411/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, http.Pusher
 type rw410 rwState
 
@@ -12819,6 +17266,15 @@ func (w *rw410) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw410) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w410 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 412/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -12856,6 +17312,16 @@ func (w *rw411) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w411 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 413/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw412 rwState
 
@@ -12886,6 +17352,15 @@ func (w *rw412) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw412) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w412 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 414/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -12923,6 +17398,16 @@ func (w *rw413) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w413 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 415/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw414 rwState
 
@@ -12956,6 +17441,16 @@ func (w *rw414) EnableFullDuplex() error {
 }
 func (w *rw414) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w414 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 416/512: http.ResponseWriter, http.Flusher, httpFlushError, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -12996,6 +17491,17 @@ func (w *rw415) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w415 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 417/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker
 type rw416 rwState
 
@@ -13017,6 +17523,13 @@ func (w *rw416) FlushError() error {
 }
 func (w *rw416) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w416 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
 }
 
 // combination 418/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.StringWriter
@@ -13045,6 +17558,14 @@ func (w *rw417) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w417 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 419/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, http.Pusher
 type rw418 rwState
 
@@ -13069,6 +17590,14 @@ func (w *rw418) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw418) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w418 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 420/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, http.Pusher, io.StringWriter
@@ -13100,6 +17629,15 @@ func (w *rw419) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w419 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 421/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, fullDuplexEnabler
 type rw420 rwState
 
@@ -13124,6 +17662,14 @@ func (w *rw420) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw420) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w420 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 422/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -13155,6 +17701,15 @@ func (w *rw421) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w421 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 423/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw422 rwState
 
@@ -13182,6 +17737,15 @@ func (w *rw422) EnableFullDuplex() error {
 }
 func (w *rw422) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w422 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 424/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -13216,6 +17780,16 @@ func (w *rw423) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w423 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 425/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner
 type rw424 rwState
 
@@ -13243,6 +17817,14 @@ func (w *rw424) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw424) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w424 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
 }
 
 // combination 426/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, io.StringWriter
@@ -13277,6 +17859,15 @@ func (w *rw425) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w425 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 427/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, http.Pusher
 type rw426 rwState
 
@@ -13307,6 +17898,15 @@ func (w *rw426) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw426) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w426 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 428/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -13344,6 +17944,16 @@ func (w *rw427) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w427 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 429/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler
 type rw428 rwState
 
@@ -13374,6 +17984,15 @@ func (w *rw428) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw428) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w428 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 430/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -13411,6 +18030,16 @@ func (w *rw429) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w429 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 431/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw430 rwState
 
@@ -13444,6 +18073,16 @@ func (w *rw430) EnableFullDuplex() error {
 }
 func (w *rw430) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w430 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 432/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -13484,6 +18123,17 @@ func (w *rw431) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w431 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 433/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom
 type rw432 rwState
 
@@ -13508,6 +18158,14 @@ func (w *rw432) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw432) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w432 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 434/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -13539,6 +18197,15 @@ func (w *rw433) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w433 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 435/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw434 rwState
 
@@ -13566,6 +18233,15 @@ func (w *rw434) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw434) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w434 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 436/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -13600,6 +18276,16 @@ func (w *rw435) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w435 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 437/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw436 rwState
 
@@ -13627,6 +18313,15 @@ func (w *rw436) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw436) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w436 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 438/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -13661,6 +18356,16 @@ func (w *rw437) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w437 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 439/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw438 rwState
 
@@ -13691,6 +18396,16 @@ func (w *rw438) EnableFullDuplex() error {
 }
 func (w *rw438) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w438 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 440/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -13728,6 +18443,17 @@ func (w *rw439) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w439 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 441/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner
 type rw440 rwState
 
@@ -13758,6 +18484,15 @@ func (w *rw440) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw440) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w440 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 442/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -13795,6 +18530,16 @@ func (w *rw441) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w441 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 443/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw442 rwState
 
@@ -13828,6 +18573,16 @@ func (w *rw442) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw442) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w442 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 444/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -13868,6 +18623,17 @@ func (w *rw443) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w443 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 445/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw444 rwState
 
@@ -13901,6 +18667,16 @@ func (w *rw444) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw444) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w444 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 446/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -13941,6 +18717,17 @@ func (w *rw445) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w445 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 447/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw446 rwState
 
@@ -13977,6 +18764,17 @@ func (w *rw446) EnableFullDuplex() error {
 }
 func (w *rw446) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w446 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 448/512: http.ResponseWriter, http.Flusher, httpFlushError, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -14020,6 +18818,18 @@ func (w *rw447) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w447 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 449/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier
 type rw448 rwState
 
@@ -14041,6 +18851,13 @@ func (w *rw448) FlushError() error {
 }
 func (w *rw448) CloseNotify() <-chan bool {
 	return (*rwState)(w).doCloseNotify()
+}
+
+type w448 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
 }
 
 // combination 450/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.StringWriter
@@ -14069,6 +18886,14 @@ func (w *rw449) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w449 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.StringWriter
+}
+
 // combination 451/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Pusher
 type rw450 rwState
 
@@ -14093,6 +18918,14 @@ func (w *rw450) CloseNotify() <-chan bool {
 }
 func (w *rw450) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w450 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Pusher
 }
 
 // combination 452/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Pusher, io.StringWriter
@@ -14124,6 +18957,15 @@ func (w *rw451) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w451 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 453/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, fullDuplexEnabler
 type rw452 rwState
 
@@ -14148,6 +18990,14 @@ func (w *rw452) CloseNotify() <-chan bool {
 }
 func (w *rw452) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w452 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
 }
 
 // combination 454/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, fullDuplexEnabler, io.StringWriter
@@ -14179,6 +19029,15 @@ func (w *rw453) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w453 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 455/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, fullDuplexEnabler, http.Pusher
 type rw454 rwState
 
@@ -14206,6 +19065,15 @@ func (w *rw454) EnableFullDuplex() error {
 }
 func (w *rw454) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w454 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 456/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -14240,6 +19108,16 @@ func (w *rw455) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w455 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 457/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner
 type rw456 rwState
 
@@ -14267,6 +19145,14 @@ func (w *rw456) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw456) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w456 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
 }
 
 // combination 458/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, io.StringWriter
@@ -14301,6 +19187,15 @@ func (w *rw457) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w457 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	io.StringWriter
+}
+
 // combination 459/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, http.Pusher
 type rw458 rwState
 
@@ -14331,6 +19226,15 @@ func (w *rw458) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw458) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w458 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	http.Pusher
 }
 
 // combination 460/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, http.Pusher, io.StringWriter
@@ -14368,6 +19272,16 @@ func (w *rw459) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w459 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 461/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler
 type rw460 rwState
 
@@ -14398,6 +19312,15 @@ func (w *rw460) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw460) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w460 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 462/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, io.StringWriter
@@ -14435,6 +19358,16 @@ func (w *rw461) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w461 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 463/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher
 type rw462 rwState
 
@@ -14468,6 +19401,16 @@ func (w *rw462) EnableFullDuplex() error {
 }
 func (w *rw462) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w462 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 464/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -14508,6 +19451,17 @@ func (w *rw463) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w463 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 465/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom
 type rw464 rwState
 
@@ -14532,6 +19486,14 @@ func (w *rw464) CloseNotify() <-chan bool {
 }
 func (w *rw464) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w464 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
 }
 
 // combination 466/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, io.StringWriter
@@ -14563,6 +19525,15 @@ func (w *rw465) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w465 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 467/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, http.Pusher
 type rw466 rwState
 
@@ -14590,6 +19561,15 @@ func (w *rw466) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw466) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w466 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 468/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -14624,6 +19604,16 @@ func (w *rw467) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w467 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 469/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler
 type rw468 rwState
 
@@ -14651,6 +19641,15 @@ func (w *rw468) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw468) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w468 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 470/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -14685,6 +19684,16 @@ func (w *rw469) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w469 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 471/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw470 rwState
 
@@ -14715,6 +19724,16 @@ func (w *rw470) EnableFullDuplex() error {
 }
 func (w *rw470) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w470 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 472/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -14752,6 +19771,17 @@ func (w *rw471) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w471 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 473/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner
 type rw472 rwState
 
@@ -14782,6 +19812,15 @@ func (w *rw472) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw472) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w472 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 474/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, io.StringWriter
@@ -14819,6 +19858,16 @@ func (w *rw473) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w473 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 475/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher
 type rw474 rwState
 
@@ -14852,6 +19901,16 @@ func (w *rw474) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw474) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w474 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 476/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -14892,6 +19951,17 @@ func (w *rw475) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w475 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 477/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw476 rwState
 
@@ -14925,6 +19995,16 @@ func (w *rw476) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw476) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w476 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 478/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -14965,6 +20045,17 @@ func (w *rw477) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w477 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 479/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw478 rwState
 
@@ -15001,6 +20092,17 @@ func (w *rw478) EnableFullDuplex() error {
 }
 func (w *rw478) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w478 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 480/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -15044,6 +20146,18 @@ func (w *rw479) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w479 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 481/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker
 type rw480 rwState
 
@@ -15068,6 +20182,14 @@ func (w *rw480) CloseNotify() <-chan bool {
 }
 func (w *rw480) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return (*rwState)(w).doHijack()
+}
+
+type w480 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
 }
 
 // combination 482/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.StringWriter
@@ -15099,6 +20221,15 @@ func (w *rw481) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w481 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.StringWriter
+}
+
 // combination 483/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, http.Pusher
 type rw482 rwState
 
@@ -15126,6 +20257,15 @@ func (w *rw482) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw482) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w482 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
 }
 
 // combination 484/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, http.Pusher, io.StringWriter
@@ -15160,6 +20300,16 @@ func (w *rw483) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w483 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 485/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler
 type rw484 rwState
 
@@ -15187,6 +20337,15 @@ func (w *rw484) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw484) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w484 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
 }
 
 // combination 486/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, io.StringWriter
@@ -15221,6 +20380,16 @@ func (w *rw485) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w485 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 487/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher
 type rw486 rwState
 
@@ -15251,6 +20420,16 @@ func (w *rw486) EnableFullDuplex() error {
 }
 func (w *rw486) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w486 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 488/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -15288,6 +20467,17 @@ func (w *rw487) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w487 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 489/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner
 type rw488 rwState
 
@@ -15318,6 +20508,15 @@ func (w *rw488) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw488) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w488 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
 }
 
 // combination 490/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, io.StringWriter
@@ -15355,6 +20554,16 @@ func (w *rw489) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w489 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	io.StringWriter
+}
+
 // combination 491/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher
 type rw490 rwState
 
@@ -15388,6 +20597,16 @@ func (w *rw490) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw490) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w490 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
 }
 
 // combination 492/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, http.Pusher, io.StringWriter
@@ -15428,6 +20647,17 @@ func (w *rw491) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w491 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 493/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler
 type rw492 rwState
 
@@ -15461,6 +20691,16 @@ func (w *rw492) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw492) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w492 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 494/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, io.StringWriter
@@ -15501,6 +20741,17 @@ func (w *rw493) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w493 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 495/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher
 type rw494 rwState
 
@@ -15537,6 +20788,17 @@ func (w *rw494) EnableFullDuplex() error {
 }
 func (w *rw494) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w494 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 496/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -15580,6 +20842,18 @@ func (w *rw495) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w495 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 497/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom
 type rw496 rwState
 
@@ -15607,6 +20881,15 @@ func (w *rw496) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 func (w *rw496) ReadFrom(src io.Reader) (int64, error) {
 	return (*rwState)(w).doReadFrom(src)
+}
+
+type w496 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
 }
 
 // combination 498/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, io.StringWriter
@@ -15641,6 +20924,16 @@ func (w *rw497) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w497 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	io.StringWriter
+}
+
 // combination 499/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher
 type rw498 rwState
 
@@ -15671,6 +20964,16 @@ func (w *rw498) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw498) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w498 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
 }
 
 // combination 500/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, http.Pusher, io.StringWriter
@@ -15708,6 +21011,17 @@ func (w *rw499) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w499 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 501/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler
 type rw500 rwState
 
@@ -15738,6 +21052,16 @@ func (w *rw500) ReadFrom(src io.Reader) (int64, error) {
 }
 func (w *rw500) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w500 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
 }
 
 // combination 502/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, io.StringWriter
@@ -15775,6 +21099,17 @@ func (w *rw501) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w501 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 503/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher
 type rw502 rwState
 
@@ -15808,6 +21143,17 @@ func (w *rw502) EnableFullDuplex() error {
 }
 func (w *rw502) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w502 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 504/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -15848,6 +21194,18 @@ func (w *rw503) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w503 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 505/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner
 type rw504 rwState
 
@@ -15881,6 +21239,16 @@ func (w *rw504) SetReadDeadline(deadline time.Time) error {
 }
 func (w *rw504) SetWriteDeadline(deadline time.Time) error {
 	return (*rwState)(w).doSetWriteDeadline(deadline)
+}
+
+type w504 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
 }
 
 // combination 506/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, io.StringWriter
@@ -15921,6 +21289,17 @@ func (w *rw505) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w505 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	io.StringWriter
+}
+
 // combination 507/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher
 type rw506 rwState
 
@@ -15957,6 +21336,17 @@ func (w *rw506) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw506) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w506 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
 }
 
 // combination 508/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, http.Pusher, io.StringWriter
@@ -16000,6 +21390,18 @@ func (w *rw507) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w507 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	http.Pusher
+	io.StringWriter
+}
+
 // combination 509/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler
 type rw508 rwState
 
@@ -16036,6 +21438,17 @@ func (w *rw508) SetWriteDeadline(deadline time.Time) error {
 }
 func (w *rw508) EnableFullDuplex() error {
 	return (*rwState)(w).doEnableFullDuplex()
+}
+
+type w508 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
 }
 
 // combination 510/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, io.StringWriter
@@ -16079,6 +21492,18 @@ func (w *rw509) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
 }
 
+type w509 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	io.StringWriter
+}
+
 // combination 511/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher
 type rw510 rwState
 
@@ -16118,6 +21543,18 @@ func (w *rw510) EnableFullDuplex() error {
 }
 func (w *rw510) Push(target string, opts *http.PushOptions) error {
 	return (*rwState)(w).doPush(target, opts)
+}
+
+type w510 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
 }
 
 // combination 512/512: http.ResponseWriter, http.Flusher, httpFlushError, http.CloseNotifier, http.Hijacker, io.ReaderFrom, deadliner, fullDuplexEnabler, http.Pusher, io.StringWriter
@@ -16162,6 +21599,19 @@ func (w *rw511) Push(target string, opts *http.PushOptions) error {
 }
 func (w *rw511) WriteString(s string) (int, error) {
 	return (*rwState)(w).doWriteString(s)
+}
+
+type w511 struct {
+	http.ResponseWriter
+	http.Flusher
+	httpFlushError
+	http.CloseNotifier
+	http.Hijacker
+	io.ReaderFrom
+	deadliner
+	fullDuplexEnabler
+	http.Pusher
+	io.StringWriter
 }
 
 type Unwrapper interface {

@@ -56,3 +56,17 @@ func BenchmarkWrappedWriteNoHook(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkCombine(b *testing.B) {
+	resp := httptest.NewRecorder()
+	overwrite := &flushErrorResponseWriter{}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for b.Loop() {
+		wrapped := Combine(resp, overwrite)
+		if wrapped == nil {
+			b.Fatal()
+		}
+	}
+}

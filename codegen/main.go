@@ -155,6 +155,44 @@ type Hooks struct {
 	g.Printf("panic(\"unreachable\")")
 	g.Printf("}\n\n")
 
+	// Overwrite func
+	g.Printf(`
+// Combine returns a http.ResponseWriter that provides a combination of interfaces provided by both 
+// http.ResponseWriter instances where the last one takes precedence. Specifically if it implements any combination of:
+//
+%s
+`, strings.Join(docList, "\n"))
+	g.Printf("func Combine(a http.ResponseWriter, b http.ResponseWriter) http.ResponseWriter {\n")
+
+	// build a uint8 combo index so the switch compiles to a jump table.
+	g.Printf("var combo uint16\n")
+	g.Printf("var ok bool\n")
+	for i, iface := range subIfaces {
+		bit := len(subIfaces) - i - 1
+
+		g.Printf("var t%[1]d %s\n", i, iface.Name)
+		g.Printf("if t%[1]d, ok = b.(%s); ok {\n", i, iface.Name)
+		g.Printf("combo |= 1<<%d\n", bit)
+		g.Printf("} else if t%[1]d, ok = a.(%s); ok {\n", i, iface.Name)
+		g.Printf("combo |= 1<<%d\n", bit)
+		g.Printf("}\n")
+	}
+
+	g.Printf("switch combo {\n")
+	for c := range combinations {
+		g.Printf("case %d: return &w%d{", c, c)
+		g.Printf("b")
+		for j := range subIfaces {
+			if c&(1<<uint(len(subIfaces)-j-1)) > 0 {
+				g.Printf(", t%[1]d", j)
+			}
+		}
+		g.Printf("}\n")
+	}
+	g.Printf("}\n")
+	g.Printf("panic(\"unreachable\")")
+	g.Printf("}\n\n")
+
 	// rwState holds the underlying writer plus the precomputed hooks.
 	// All variant types are type-definitions over rwState, so a single *rwState
 	// allocation can be reinterpreted as any variant via pointer conversion.
@@ -206,7 +244,7 @@ type Hooks struct {
 		}
 		g.Printf("}\n")
 	}
-	for c := 0; c < combinations; c++ {
+	for c := range combinations {
 		supported := []string{"http.ResponseWriter"}
 		for j, iface := range subIfaces {
 			if c&(1<<uint(len(subIfaces)-j-1)) > 0 {
@@ -227,6 +265,10 @@ type Hooks struct {
 			}
 		}
 		g.Printf("\n")
+
+		g.Printf("type w%d struct {\n", c)
+		g.Printf("%s", strings.Join(supported, "\n"))
+		g.Printf("}\n")
 	}
 	g.Printf(`
 type Unwrapper interface {
